@@ -1,0 +1,114 @@
+# ===========================
+# Java / Maven
+# ===========================
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven wrapper jar (yuklab olinadi, commitga shart emas)
+.mvn/wrapper/maven-wrapper.jar
+
+# ===========================
+# Spring Boot
+# ===========================
+# Maxfiy konfiguratsiya fayllari — HECH QACHON commitga qo'shma
+application-local.yaml
+application-local.yml
+application-local.properties
+application-prod.yaml
+application-prod.yml
+application-prod.properties
+*.env
+.env
+.env.*
+
+# Log fayllar
+logs/
+*.log
+*.log.*
+spring.log
+
+# Upload qilingan fayllar
+uploads/
+media/
+
+# ===========================
+# IntelliJ IDEA
+# ===========================
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ===========================
+# Eclipse / STS
+# ===========================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+bin/
+
+# ===========================
+# NetBeans
+# ===========================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+*.code-workspace
+
+# ===========================
+# OS fayllar
+# ===========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ===========================
+# Docker (keyinroq kerak bo'ladi)
+# ===========================
+docker-compose.override.yml
+
+# ===========================
+# Test natijalari
+# ===========================
+/test-results/
+/surefire-reports/
