@@ -13,3 +13,14 @@ spring:
       ddl-auto: update
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+security:
+  jwt:
+    secret-key: ${SECRET_KEY:f72456084250dd5fa5b18eafffe4cdc1dbdcb36fa0e3608eb85d13b67705ce44}
+    expiration-time: 86400000
+    refresh-expiration-time: 604800000
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null

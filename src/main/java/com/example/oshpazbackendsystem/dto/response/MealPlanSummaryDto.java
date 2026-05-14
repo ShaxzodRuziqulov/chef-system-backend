@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MealPlanSummaryResponse {
+public class MealPlanSummaryDto {
 
     private Long id;
     private String name;

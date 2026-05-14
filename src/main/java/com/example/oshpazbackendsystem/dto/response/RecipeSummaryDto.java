@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeSummaryResponse {
+public class RecipeSummaryDto {
 
     private Long id;
     private String titleUz;
@@ -45,7 +45,7 @@ public class RecipeSummaryResponse {
     private String authorFullName;
 
     // Teglar
-    private List<TagResponse> tags;
+    private List<TagDto> tags;
 
     private LocalDateTime createdAt;
 }

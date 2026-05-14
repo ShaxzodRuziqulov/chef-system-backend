@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeImageResponse {
+public class RecipeImageDto {
 
     private Long id;
     private String imageUrl;

@@ -31,7 +31,7 @@ public class MealPlanResponse {
     private String notes;
 
     // Haftalik jadval
-    private List<MealPlanEntryResponse> entries;
+    private List<MealPlanEntryDto> entries;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

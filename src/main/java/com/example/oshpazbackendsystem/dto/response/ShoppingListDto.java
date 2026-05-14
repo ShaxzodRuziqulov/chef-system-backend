@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoppingListResponse {
+public class ShoppingListDto {
 
     private Long id;
 
@@ -29,7 +29,7 @@ public class ShoppingListResponse {
     private boolean completed;
 
     // Mahsulotlar
-    private List<ShoppingListItemResponse> items;
+    private List<ShoppingListItemDto> items;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagResponse {
+public class RecipeStepDto {
 
     private Long id;
-    private String nameUz;
-    private String nameRu;
-    private String nameEng;
-    private String description;
+    private Integer stepNumber;
+    private String instruction;
+    private String imageUrl;
+    private Integer durationMinutes;
 }

@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(cmd /c \"dir /B /S D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\dto\")"
+      "PowerShell(cmd /c \"dir /B /S D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\dto\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\mapper\" -File)",
+      "Bash(Select-Object Name)",
+      "Bash(mvn compile *)",
+      "PowerShell(Get-Command mvn -ErrorAction SilentlyContinue; $env:JAVA_HOME; $env:PATH -split \";\" | Where-Object { $_ -match \"maven|jdk|java\" -or $_ -match \"Maven\" })"
     ]
   }
 }

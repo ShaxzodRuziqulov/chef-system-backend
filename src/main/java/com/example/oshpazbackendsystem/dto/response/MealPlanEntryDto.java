@@ -12,7 +12,7 @@ import java.time.DayOfWeek;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MealPlanEntryResponse {
+public class MealPlanEntryDto {
 
     private Long id;
 

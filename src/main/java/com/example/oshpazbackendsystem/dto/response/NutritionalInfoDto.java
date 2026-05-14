@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NutritionalInfoResponse {
+public class NutritionalInfoDto {
 
     private Long id;
     private Double caloriesPerServing;

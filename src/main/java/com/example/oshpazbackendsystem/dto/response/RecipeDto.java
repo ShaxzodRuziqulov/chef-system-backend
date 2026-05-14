@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeResponse {
+public class RecipeDto {
 
     private Long id;
     private String titleUz;
@@ -51,13 +51,13 @@ public class RecipeResponse {
     private String authorFullName;
 
     // Teglar
-    private Set<TagResponse> tags;
+    private Set<TagDto> tags;
 
     // Tafsilotlar
-    private List<RecipeIngredientResponse> ingredients;
-    private List<RecipeStepResponse> steps;
-    private List<RecipeImageResponse> images;
-    private NutritionalInfoResponse nutritionalInfo;
+    private List<RecipeIngredientDto> ingredients;
+    private List<RecipeStepDto> steps;
+    private List<RecipeImageDto> images;
+    private NutritionalInfoDto nutritionalInfo;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
