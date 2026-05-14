@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cmd /c \"dir /B /S D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\dto\")"
+    ]
+  }
+}

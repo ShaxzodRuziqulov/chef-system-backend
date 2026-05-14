@@ -1,0 +1,36 @@
+package com.example.oshpazbackendsystem.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ShoppingListResponse {
+
+    private Long id;
+
+    // Foydalanuvchi
+    private UUID userId;
+
+    // Bog'liq haftalik reja (ixtiyoriy)
+    private Long mealPlanId;
+    private String mealPlanName;
+
+    // Ro'yxat
+    private String name;
+    private boolean completed;
+
+    // Mahsulotlar
+    private List<ShoppingListItemResponse> items;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
