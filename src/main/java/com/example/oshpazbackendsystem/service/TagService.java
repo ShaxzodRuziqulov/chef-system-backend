@@ -19,8 +19,12 @@ public class TagService {
         return mapper.toDto(repository.save(mapper.toEntity(response)));
     }
 
-    public TagDto update(TagDto dto) {
-        Tag tag = mapper.toEntity(dto);
+    public TagDto update(Long id, TagDto dto) {
+        Tag tag = findByTagId(id);
+        tag.setNameUz(dto.getNameUz());
+        tag.setNameRu(dto.getNameRu());
+        tag.setNameEng(dto.getNameEng());
+        tag.setDescription(dto.getDescription());
         return mapper.toDto(repository.save(tag));
     }
 
@@ -32,10 +36,10 @@ public class TagService {
         return mapper.toDto(findByTagId(id));
     }
 
-    public TagDto deleteById(Long id) {
+    public void deleteById(Long id) {
         Tag tag = findByTagId(id);
         repository.delete(tag);
-        return mapper.toDto(tag);
+        mapper.toDto(tag);
     }
 
     public Tag findByTagId(Long id) {

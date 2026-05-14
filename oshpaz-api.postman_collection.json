@@ -1,0 +1,556 @@
+{
+  "info": {
+    "name": "Oshpaz Backend API",
+    "description": "Retsept va ovqat rejalashtirish tizimi — to'liq API collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",      "value": "http://localhost:8090", "type": "string" },
+    { "key": "accessToken",  "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "  const j = pm.response.json();",
+              "  pm.collectionVariables.set('accessToken',  j.accessToken  || '');",
+              "  pm.collectionVariables.set('refreshToken', j.refreshToken || '');",
+              "  pm.test('Register 201', () => pm.response.to.have.status(201));",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Test Foydalanuvchi\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 200) {",
+              "  const j = pm.response.json();",
+              "  pm.collectionVariables.set('accessToken',  j.access_token  || '');",
+              "  pm.collectionVariables.set('refreshToken', j.refresh_token || '');",
+              "  pm.test('Login 200', () => pm.response.to.have.status(200));",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"1234\"\n}" }
+          }
+        },
+        {
+          "name": "Me (joriy user)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api","auth","me"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 200) {",
+              "  const j = pm.response.json();",
+              "  pm.collectionVariables.set('accessToken',  j.access_token  || '');",
+              "  pm.collectionVariables.set('refreshToken', j.refresh_token || '');",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh"] },
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","auth","logout"] },
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📂 Categories",
+      "item": [
+        {
+          "name": "Barcha kategoriyalar",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "Kategoriya — ID bo'yicha",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "Kategoriya yaratish (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api","categories"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Sho'rvalar\",\n  \"nameRu\": \"Супы\",\n  \"nameEng\": \"Soups\",\n  \"description\": \"Barcha turdagi sho'rvalar\",\n  \"iconUrl\": \"https://example.com/icons/soup.png\",\n  \"colorCode\": \"#FF6B35\"\n}" }
+          }
+        },
+        {
+          "name": "Kategoriya yangilash (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Sho'rvalar\",\n  \"nameRu\": \"Супы\",\n  \"nameEng\": \"Soups\",\n  \"description\": \"Yangilangan tavsif\",\n  \"iconUrl\": \"https://example.com/icons/soup.png\",\n  \"colorCode\": \"#E63946\"\n}" }
+          }
+        },
+        {
+          "name": "Kategoriya o'chirish (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api","categories","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏷️ Tags",
+      "item": [
+        {
+          "name": "Barcha teglar",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tags", "host": ["{{baseUrl}}"], "path": ["api","tags"] }
+          }
+        },
+        {
+          "name": "Teg — ID bo'yicha",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tags/1", "host": ["{{baseUrl}}"], "path": ["api","tags","1"] }
+          }
+        },
+        {
+          "name": "Teg yaratish (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/tags", "host": ["{{baseUrl}}"], "path": ["api","tags"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Tez tayyorlanadigan\",\n  \"nameRu\": \"Быстрое приготовление\",\n  \"nameEng\": \"Quick cook\",\n  \"description\": \"30 daqiqadan kam vaqtda tayyor bo'ladi\"\n}" }
+          }
+        },
+        {
+          "name": "Teg yangilash (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/tags/1", "host": ["{{baseUrl}}"], "path": ["api","tags","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Tez tayyorlanadigan\",\n  \"nameRu\": \"Быстрое\",\n  \"nameEng\": \"Quick\",\n  \"description\": \"Yangilangan tavsif\"\n}" }
+          }
+        },
+        {
+          "name": "Teg o'chirish (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tags/1", "host": ["{{baseUrl}}"], "path": ["api","tags","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🧅 Ingredients",
+      "item": [
+        {
+          "name": "Barcha ingredientlar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/ingredients?page=0&size=20&sort=nameUz",
+              "host": ["{{baseUrl}}"], "path": ["api","ingredients"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sort", "value": "nameUz" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ingredient — ID bo'yicha",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/ingredients/1", "host": ["{{baseUrl}}"], "path": ["api","ingredients","1"] }
+          }
+        },
+        {
+          "name": "Ingredient yaratish (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ingredients", "host": ["{{baseUrl}}"], "path": ["api","ingredients"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Piyoz\",\n  \"nameRu\": \"Лук\",\n  \"nameEng\": \"Onion\",\n  \"description\": \"Oddiy piyoz\",\n  \"defaultUnit\": \"GRAM\",\n  \"caloriesPer100g\": 40.0,\n  \"allergen\": false\n}" }
+          }
+        },
+        {
+          "name": "Ingredient yangilash (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ingredients/1", "host": ["{{baseUrl}}"], "path": ["api","ingredients","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nameUz\": \"Piyoz\",\n  \"nameRu\": \"Лук репчатый\",\n  \"nameEng\": \"Onion\",\n  \"description\": \"Yangilangan tavsif\",\n  \"defaultUnit\": \"GRAM\",\n  \"caloriesPer100g\": 40.0,\n  \"allergen\": false\n}" }
+          }
+        },
+        {
+          "name": "Ingredient o'chirish (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/ingredients/1", "host": ["{{baseUrl}}"], "path": ["api","ingredients","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🍲 Recipes",
+      "item": [
+        {
+          "name": "Barcha retseptlar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes?page=0&size=12&sort=createdAt,desc",
+              "host": ["{{baseUrl}}"], "path": ["api","recipes"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "12" },
+                { "key": "sort", "value": "createdAt,desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retsept — ID bo'yicha (to'liq)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/recipes/1", "host": ["{{baseUrl}}"], "path": ["api","recipes","1"] }
+          }
+        },
+        {
+          "name": "Qidiruv (uz/ru/eng)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/search?keyword=osh&page=0&size=12",
+              "host": ["{{baseUrl}}"], "path": ["api","recipes","search"],
+              "query": [
+                { "key": "keyword", "value": "osh" },
+                { "key": "page",    "value": "0" },
+                { "key": "size",    "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Kategoriya bo'yicha",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/category/1?page=0&size=12",
+              "host": ["{{baseUrl}}"], "path": ["api","recipes","category","1"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Qiyinlik bo'yicha (EASY / MEDIUM / HARD / EXPERT)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/difficulty/EASY?page=0&size=12",
+              "host": ["{{baseUrl}}"], "path": ["api","recipes","difficulty","EASY"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mening retseptlarim",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/my?page=0&size=12",
+              "host": ["{{baseUrl}}"], "path": ["api","recipes","my"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retsept yaratish",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/recipes", "host": ["{{baseUrl}}"], "path": ["api","recipes"] },
+            "body": { "mode": "raw", "raw": "{\n  \"titleUz\": \"O'zbek oshi\",\n  \"titleRu\": \"Узбекский плов\",\n  \"titleEng\": \"Uzbek Plov\",\n  \"description\": \"An'anaviy O'zbek oshi\",\n  \"categoryId\": 1,\n  \"tagIds\": [1, 2],\n  \"prepTimeMinutes\": 30,\n  \"cookTimeMinutes\": 90,\n  \"servings\": 6,\n  \"difficultyLevel\": \"MEDIUM\",\n  \"imageUrl\": \"https://example.com/plov.jpg\",\n  \"visible\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"amount\": 500,\n      \"unit\": \"GRAM\",\n      \"notes\": \"Yuvib tozalangan\",\n      \"orderIndex\": 1\n    }\n  ],\n  \"steps\": [\n    {\n      \"stepNumber\": 1,\n      \"instruction\": \"Guruchni yuvib oling\",\n      \"durationMinutes\": 10\n    },\n    {\n      \"stepNumber\": 2,\n      \"instruction\": \"Sabzi va piyozni qovuring\",\n      \"durationMinutes\": 15\n    }\n  ],\n  \"nutritionalInfo\": {\n    \"caloriesPerServing\": 450,\n    \"proteinGrams\": 15,\n    \"fatGrams\": 18,\n    \"carbohydrateGrams\": 60\n  }\n}" }
+          }
+        },
+        {
+          "name": "Retsept yangilash (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/recipes/1", "host": ["{{baseUrl}}"], "path": ["api","recipes","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"titleUz\": \"O'zbek oshi (yangilangan)\",\n  \"servings\": 8,\n  \"visible\": true\n}" }
+          }
+        },
+        {
+          "name": "Retsept o'chirish",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/recipes/1", "host": ["{{baseUrl}}"], "path": ["api","recipes","1"] }
+          }
+        },
+        {
+          "name": "Ko'rishlar sonini oshirish",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/recipes/1/view", "host": ["{{baseUrl}}"], "path": ["api","recipes","1","view"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📅 Meal Plans",
+      "item": [
+        {
+          "name": "Mening rejalarim",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/meal-plans?page=0&size=10",
+              "host": ["{{baseUrl}}"], "path": ["api","meal-plans"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reja — ID bo'yicha",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans/1", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1"] }
+          }
+        },
+        {
+          "name": "Yangi reja yaratish",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans", "host": ["{{baseUrl}}"], "path": ["api","meal-plans"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bu hafta uchun reja\",\n  \"weekStartDate\": \"2026-05-18\",\n  \"notes\": \"Sog'lom ovqatlanish rejasi\"\n}" }
+          }
+        },
+        {
+          "name": "Rejaga ovqat qo'shish",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans/1/entries", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1","entries"] },
+            "body": { "mode": "raw", "raw": "{\n  \"recipeId\": 1,\n  \"dayOfWeek\": \"MONDAY\",\n  \"mealType\": \"BREAKFAST\",\n  \"servings\": 2,\n  \"notes\": \"Ertalabki nonushta\"\n}" }
+          }
+        },
+        {
+          "name": "Rejadan ovqatni o'chirish",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans/1/entries/5", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1","entries","5"] }
+          }
+        },
+        {
+          "name": "Rejani faollashtirish",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans/1/activate", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1","activate"] }
+          }
+        },
+        {
+          "name": "Reja o'chirish",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/meal-plans/1", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🛒 Shopping Lists",
+      "item": [
+        {
+          "name": "Mening xarid ro'yxatlarim",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/shopping-lists?page=0&size=10",
+              "host": ["{{baseUrl}}"], "path": ["api","shopping-lists"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Xarid ro'yxati — ID bo'yicha",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/shopping-lists/1", "host": ["{{baseUrl}}"], "path": ["api","shopping-lists","1"] }
+          }
+        },
+        {
+          "name": "🪄 Rejadan avtomatik yaratish",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/shopping-lists/generate/1", "host": ["{{baseUrl}}"], "path": ["api","shopping-lists","generate","1"] }
+          }
+        },
+        {
+          "name": "Mahsulot holatini yangilash",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/shopping-lists/1/items/3", "host": ["{{baseUrl}}"], "path": ["api","shopping-lists","1","items","3"] },
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"PURCHASED\"\n}" }
+          }
+        },
+        {
+          "name": "Xarid ro'yxatini o'chirish",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/shopping-lists/1", "host": ["{{baseUrl}}"], "path": ["api","shopping-lists","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "👤 Users (ADMIN)",
+      "item": [
+        {
+          "name": "Foydalanuvchi profili",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}"] }
+          }
+        },
+        {
+          "name": "Foydalanuvchini bloklash (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}/deactivate", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}","deactivate"] }
+          }
+        },
+        {
+          "name": "Foydalanuvchini faollashtirish (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}/activate", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}","activate"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}

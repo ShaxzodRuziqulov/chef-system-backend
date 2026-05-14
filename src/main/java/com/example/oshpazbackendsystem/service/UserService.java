@@ -7,6 +7,7 @@ import com.example.oshpazbackendsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +28,11 @@ public class UserService {
         return mapper.toDto(user);
     }
 
+    public List<UserDto> findAll() {
+        List<User> users = repository.findAll();
+        return mapper.toDto(users);
+    }
+
     public UserDto findById(UUID id) {
         return mapper.toDto(findByUserId(id));
     }
@@ -34,6 +40,12 @@ public class UserService {
     public UserDto deleteById(UUID id) {
         User user = findByUserId(id);
         user.setActive(false);
+        return mapper.toDto(repository.save(user));
+    }
+
+    public UserDto activateById(UUID id) {
+        User user = findByUserId(id);
+        user.setActive(true);
         return mapper.toDto(repository.save(user));
     }
 
