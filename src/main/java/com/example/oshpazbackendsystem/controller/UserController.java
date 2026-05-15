@@ -14,7 +14,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "Foydalanuvchilar", description = "Foydalanuvchilarni boshqarish — ADMIN panel")
+@Tag(name = "Foydalanuvchilar")
 public class UserController {
 
     private final UserService service;
@@ -28,14 +28,14 @@ public class UserController {
 
     @PutMapping("/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Foydalanuvchini bloklash — faqat ADMIN")
+    @Operation(summary = "Foydalanuvchini bloklash — ADMIN")
     public ResponseEntity<UserDto> deactivate(@PathVariable UUID id) {
         return ResponseEntity.ok(service.deleteById(id));
     }
 
     @PutMapping("/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Foydalanuvchini faollashtirish — faqat ADMIN")
+    @Operation(summary = "Foydalanuvchini faollashtirish — ADMIN")
     public ResponseEntity<UserDto> activate(@PathVariable UUID id) {
         return ResponseEntity.ok(service.activateById(id));
     }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/meal-plans")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
-@Tag(name = "Haftalik ovqat rejasi", description = "Ovqat rejasini yaratish va boshqarish")
+@Tag(name = "Haftalik ovqat rejasi")
 public class MealPlanController {
 
     private final MealPlanService service;
@@ -40,24 +40,21 @@ public class MealPlanController {
 
     @PostMapping
     @Operation(summary = "Yangi reja yaratish")
-    public ResponseEntity<MealPlanResponse> create(
-            @Valid @RequestBody MealPlanCreateRequest request) {
+    public ResponseEntity<MealPlanResponse> create(@Valid @RequestBody MealPlanCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PostMapping("/{id}/entries")
     @Operation(summary = "Rejaga ovqat qo'shish")
-    public ResponseEntity<MealPlanResponse> addEntry(
-            @PathVariable Long id,
-            @Valid @RequestBody MealPlanEntryRequest request) {
+    public ResponseEntity<MealPlanResponse> addEntry(@PathVariable Long id,
+                                                      @Valid @RequestBody MealPlanEntryRequest request) {
         return ResponseEntity.ok(service.addEntry(id, request));
     }
 
     @DeleteMapping("/{id}/entries/{entryId}")
     @Operation(summary = "Rejadan ovqatni o'chirish")
-    public ResponseEntity<MealPlanResponse> removeEntry(
-            @PathVariable Long id,
-            @PathVariable Long entryId) {
+    public ResponseEntity<MealPlanResponse> removeEntry(@PathVariable Long id,
+                                                         @PathVariable Long entryId) {
         return ResponseEntity.ok(service.removeEntry(id, entryId));
     }
 

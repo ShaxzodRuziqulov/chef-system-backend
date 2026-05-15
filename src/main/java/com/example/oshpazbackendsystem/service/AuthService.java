@@ -3,6 +3,7 @@ package com.example.oshpazbackendsystem.service;
 import com.example.oshpazbackendsystem.dto.LoginRequest;
 import com.example.oshpazbackendsystem.dto.RegisterRequest;
 import com.example.oshpazbackendsystem.dto.response.AuthResponse;
+import com.example.oshpazbackendsystem.exeption.ConflictException;
 import com.example.oshpazbackendsystem.dto.response.AuthTokenResponse;
 import com.example.oshpazbackendsystem.dto.response.AuthUserResponse;
 import com.example.oshpazbackendsystem.dto.response.RefreshTokenRequestDto;
@@ -31,10 +32,10 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Bu email allaqachon ro'yxatdan o'tgan: " + request.getEmail());
+            throw new ConflictException("EMAIL_EXISTS", "Bu email allaqachon ro'yxatdan o'tgan: " + request.getEmail());
         }
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Bu username band: " + request.getUsername());
+            throw new ConflictException("USERNAME_EXISTS", "Bu username band: " + request.getUsername());
         }
 
         User user = User.builder()

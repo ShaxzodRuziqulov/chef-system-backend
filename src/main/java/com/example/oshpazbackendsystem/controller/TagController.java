@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
-@Tag(name = "Teglar", description = "Retsept teglarini boshqarish")
+@Tag(name = "Teglar")
 public class TagController {
 
     private final TagService service;
@@ -36,7 +36,7 @@ public class TagController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Teg yaratish — faqat ADMIN")
+    @Operation(summary = "Teg yaratish — ADMIN")
     public ResponseEntity<TagDto> create(@Valid @RequestBody TagRequest request) {
         TagDto dto = TagDto.builder()
                 .nameUz(request.getNameUz())
@@ -49,9 +49,9 @@ public class TagController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Teg yangilash — faqat ADMIN")
+    @Operation(summary = "Teg yangilash — ADMIN")
     public ResponseEntity<TagDto> update(@PathVariable Long id,
-                                         @Valid @RequestBody TagRequest request) {
+                                          @Valid @RequestBody TagRequest request) {
         TagDto dto = TagDto.builder()
                 .nameUz(request.getNameUz())
                 .nameRu(request.getNameRu())
@@ -63,7 +63,7 @@ public class TagController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Teg o'chirish — faqat ADMIN")
+    @Operation(summary = "Teg o'chirish — ADMIN")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

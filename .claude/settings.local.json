@@ -5,7 +5,13 @@
       "Bash(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\mapper\" -File)",
       "Bash(Select-Object Name)",
       "Bash(mvn compile *)",
-      "PowerShell(Get-Command mvn -ErrorAction SilentlyContinue; $env:JAVA_HOME; $env:PATH -split \";\" | Where-Object { $_ -match \"maven|jdk|java\" -or $_ -match \"Maven\" })"
+      "PowerShell(Get-Command mvn -ErrorAction SilentlyContinue; $env:JAVA_HOME; $env:PATH -split \";\" | Where-Object { $_ -match \"maven|jdk|java\" -or $_ -match \"Maven\" })",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(lsof -ti:5173,5174,5175,5176)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /F /PID 14816 /PID 18596 /PID 12636 /PID 2064)",
+      "Bash(npm i *)"
     ]
   }
 }

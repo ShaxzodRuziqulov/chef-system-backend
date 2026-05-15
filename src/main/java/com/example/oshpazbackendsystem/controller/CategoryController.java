@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-@Tag(name = "Kategoriyalar", description = "Retsept kategoriyalarini boshqarish")
+@Tag(name = "Kategoriyalar")
 public class CategoryController {
 
     private final CategoryService service;
@@ -36,22 +36,22 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Kategoriya yaratish — faqat ADMIN")
+    @Operation(summary = "Kategoriya yaratish — ADMIN")
     public ResponseEntity<CategoryDto> create(@Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Kategoriya yangilash — faqat ADMIN")
+    @Operation(summary = "Kategoriya yangilash — ADMIN")
     public ResponseEntity<CategoryDto> update(@PathVariable Long id,
-                                              @Valid @RequestBody CategoryRequest request) {
+                                               @Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Kategoriya o'chirish — faqat ADMIN")
+    @Operation(summary = "Kategoriya o'chirish — ADMIN")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

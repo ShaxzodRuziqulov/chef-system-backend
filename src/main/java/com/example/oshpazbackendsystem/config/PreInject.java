@@ -4,7 +4,6 @@ import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.entity.enums.Role;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

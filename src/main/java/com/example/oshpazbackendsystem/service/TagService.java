@@ -2,6 +2,7 @@ package com.example.oshpazbackendsystem.service;
 
 import com.example.oshpazbackendsystem.dto.response.TagDto;
 import com.example.oshpazbackendsystem.entity.Tag;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.TagMapper;
 import com.example.oshpazbackendsystem.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class TagService {
     }
 
     public Tag findByTagId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("tog not found"));
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TAG_NOT_FOUND", "Tag topilmadi: " + id));
     }
 }

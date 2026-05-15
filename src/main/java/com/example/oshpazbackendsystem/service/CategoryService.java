@@ -3,6 +3,7 @@ package com.example.oshpazbackendsystem.service;
 import com.example.oshpazbackendsystem.dto.CategoryRequest;
 import com.example.oshpazbackendsystem.dto.response.CategoryDto;
 import com.example.oshpazbackendsystem.entity.Category;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.CategoryMapper;
 import com.example.oshpazbackendsystem.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,6 @@ public class CategoryService {
 
     public Category getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Kategoriya topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("CATEGORY_NOT_FOUND", "Kategoriya topilmadi: " + id));
     }
 }

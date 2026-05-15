@@ -3,6 +3,7 @@ package com.example.oshpazbackendsystem.service;
 import com.example.oshpazbackendsystem.dto.IngredientRequest;
 import com.example.oshpazbackendsystem.dto.response.IngredientDto;
 import com.example.oshpazbackendsystem.entity.Ingredient;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.IngredientMapper;
 import com.example.oshpazbackendsystem.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,6 @@ public class IngredientService {
     // Boshqa service lar uchun
     public Ingredient getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Ingredient topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("INGREDIENT_NOT_FOUND", "Ingredient topilmadi: " + id));
     }
 }

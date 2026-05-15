@@ -2,6 +2,7 @@ package com.example.oshpazbackendsystem.service;
 
 import com.example.oshpazbackendsystem.dto.response.UserDto;
 import com.example.oshpazbackendsystem.entity.User;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class UserService {
     }
 
     public User findByUserId(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "Foydalanuvchi topilmadi: " + id));
     }
 }

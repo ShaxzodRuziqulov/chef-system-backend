@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/shopping-lists")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
-@Tag(name = "Xarid ro'yxati", description = "Haftalik ovqat rejasidan xarid ro'yxatini yaratish")
+@Tag(name = "Xarid ro'yxati")
 public class ShoppingListController {
 
     private final ShoppingListService service;
@@ -37,10 +37,7 @@ public class ShoppingListController {
     }
 
     @PostMapping("/generate/{mealPlanId}")
-    @Operation(
-        summary = "Ovqat rejasidan avtomatik xarid ro'yxati yaratish",
-        description = "Haftalik rejadagi barcha retseptlar ingredientlari jamlanib, xarid ro'yxati hosil qilinadi"
-    )
+    @Operation(summary = "Ovqat rejasidan avtomatik xarid ro'yxati yaratish")
     public ResponseEntity<ShoppingListDto> generate(@PathVariable Long mealPlanId) {
         return ResponseEntity.ok(service.generateFromMealPlan(mealPlanId));
     }

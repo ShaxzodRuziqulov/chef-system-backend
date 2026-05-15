@@ -9,6 +9,8 @@ import com.example.oshpazbackendsystem.entity.MealPlanEntry;
 import com.example.oshpazbackendsystem.entity.Recipe;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.entity.enums.PlanStatus;
+import com.example.oshpazbackendsystem.exeption.ConflictException;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.MealPlanEntryRepository;
 import com.example.oshpazbackendsystem.repository.MealPlanRepository;
 import com.example.oshpazbackendsystem.repository.RecipeRepository;
@@ -45,7 +47,7 @@ public class MealPlanService {
     @Transactional(readOnly = true)
     public MealPlanResponse findById(Long id) {
         MealPlan plan = mealPlanRepository.findByIdWithEntries(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reja topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("MEAL_PLAN_NOT_FOUND", "Reja topilmadi: " + id));
         checkOwnership(plan);
         return toResponse(plan);
     }
@@ -76,14 +78,14 @@ public class MealPlanService {
         checkOwnership(plan);
 
         Recipe recipe = recipeRepository.findById(request.getRecipeId())
-                .orElseThrow(() -> new IllegalArgumentException("Retsept topilmadi: " + request.getRecipeId()));
+                .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + request.getRecipeId()));
 
         // Bir kunda bir xil ovqat vaqtiga ikkita yozuv bo'lmasligi kerak (UniqueConstraint)
         boolean exists = plan.getEntries().stream()
                 .anyMatch(e -> e.getDayOfWeek() == request.getDayOfWeek()
                             && e.getMealType() == request.getMealType());
         if (exists) {
-            throw new IllegalStateException(
+            throw new ConflictException("ENTRY_EXISTS",
                     request.getDayOfWeek() + " kuni " + request.getMealType() + " allaqachon belgilangan");
         }
 
@@ -105,7 +107,7 @@ public class MealPlanService {
         checkOwnership(plan);
 
         MealPlanEntry entry = entryRepository.findById(entryId)
-                .orElseThrow(() -> new IllegalArgumentException("Yozuv topilmadi: " + entryId));
+                .orElseThrow(() -> new NotFoundException("ENTRY_NOT_FOUND", "Yozuv topilmadi: " + entryId));
 
         plan.getEntries().remove(entry);
         return toResponse(mealPlanRepository.save(plan));
@@ -128,7 +130,7 @@ public class MealPlanService {
 
     private MealPlan getMealPlan(Long id) {
         return mealPlanRepository.findByIdWithEntries(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reja topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("MEAL_PLAN_NOT_FOUND", "Reja topilmadi: " + id));
     }
 
     private void checkOwnership(MealPlan plan) {

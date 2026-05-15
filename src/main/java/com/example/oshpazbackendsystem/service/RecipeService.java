@@ -5,6 +5,7 @@ import com.example.oshpazbackendsystem.dto.RecipeUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.*;
 import com.example.oshpazbackendsystem.entity.*;
 import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.*;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class RecipeService {
     @Transactional(readOnly = true)
     public RecipeDto findById(Long id) {
         Recipe recipe = recipeRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new IllegalArgumentException("Retsept topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id));
         return toDto(recipe);
     }
 
@@ -93,8 +94,8 @@ public class RecipeService {
         // Kategoriya
         if (request.getCategoryId() != null) {
             recipe.setCategory(categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Kategoriya topilmadi: " + request.getCategoryId())));
+                    .orElseThrow(() -> new NotFoundException(
+                            "CATEGORY_NOT_FOUND", "Kategoriya topilmadi: " + request.getCategoryId())));
         }
 
         // Teglar
@@ -111,8 +112,8 @@ public class RecipeService {
             List<RecipeIngredient> ingredients = new ArrayList<>();
             for (var req : request.getIngredients()) {
                 Ingredient ingredient = ingredientRepository.findById(req.getIngredientId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Ingredient topilmadi: " + req.getIngredientId()));
+                        .orElseThrow(() -> new NotFoundException(
+                                "INGREDIENT_NOT_FOUND", "Ingredient topilmadi: " + req.getIngredientId()));
                 ingredients.add(RecipeIngredient.builder()
                         .recipe(recipe)
                         .ingredient(ingredient)
@@ -160,7 +161,7 @@ public class RecipeService {
 
     public RecipeDto update(Long id, RecipeUpdateRequest request) {
         Recipe recipe = recipeRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new IllegalArgumentException("Retsept topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id));
 
         checkOwnership(recipe);
 
@@ -178,8 +179,8 @@ public class RecipeService {
 
         if (request.getCategoryId() != null) {
             recipe.setCategory(categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Kategoriya topilmadi: " + request.getCategoryId())));
+                    .orElseThrow(() -> new NotFoundException(
+                            "CATEGORY_NOT_FOUND", "Kategoriya topilmadi: " + request.getCategoryId())));
         }
 
         if (request.getTagIds() != null) {
@@ -190,8 +191,8 @@ public class RecipeService {
             recipe.getIngredients().clear();
             for (var req : request.getIngredients()) {
                 Ingredient ingredient = ingredientRepository.findById(req.getIngredientId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Ingredient topilmadi: " + req.getIngredientId()));
+                        .orElseThrow(() -> new NotFoundException(
+                                "INGREDIENT_NOT_FOUND", "Ingredient topilmadi: " + req.getIngredientId()));
                 recipe.getIngredients().add(RecipeIngredient.builder()
                         .recipe(recipe)
                         .ingredient(ingredient)
@@ -235,7 +236,7 @@ public class RecipeService {
 
     public void delete(Long id) {
         Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Retsept topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id));
         checkOwnership(recipe);
         recipe.setDeleted(true);   // Soft delete
         recipeRepository.save(recipe);

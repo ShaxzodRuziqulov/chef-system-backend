@@ -5,6 +5,7 @@ import com.example.oshpazbackendsystem.dto.response.ShoppingListDto;
 import com.example.oshpazbackendsystem.dto.response.ShoppingListItemDto;
 import com.example.oshpazbackendsystem.entity.*;
 import com.example.oshpazbackendsystem.entity.enums.ShoppingItemStatus;
+import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.MealPlanRepository;
 import com.example.oshpazbackendsystem.repository.ShoppingListItemRepository;
 import com.example.oshpazbackendsystem.repository.ShoppingListRepository;
@@ -43,7 +44,7 @@ public class ShoppingListService {
     @Transactional(readOnly = true)
     public ShoppingListDto findById(Long id) {
         ShoppingList list = shoppingListRepository.findByIdWithItems(id)
-                .orElseThrow(() -> new IllegalArgumentException("Xarid ro'yxati topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("SHOPPING_LIST_NOT_FOUND", "Xarid ro'yxati topilmadi: " + id));
         checkOwnership(list);
         return toDto(list);
     }
@@ -54,7 +55,7 @@ public class ShoppingListService {
         User user = currentUserService.getCurrentUser();
 
         MealPlan plan = mealPlanRepository.findByIdWithEntries(mealPlanId)
-                .orElseThrow(() -> new IllegalArgumentException("Reja topilmadi: " + mealPlanId));
+                .orElseThrow(() -> new NotFoundException("MEAL_PLAN_NOT_FOUND", "Reja topilmadi: " + mealPlanId));
 
         if (!plan.getUser().getId().equals(user.getId())) {
             throw new IllegalStateException("Bu rejaga kirish uchun ruxsat yo'q");
@@ -116,13 +117,13 @@ public class ShoppingListService {
     public ShoppingListDto updateItemStatus(Long listId, Long itemId,
                                             ShoppingListItemStatusRequest request) {
         ShoppingList list = shoppingListRepository.findByIdWithItems(listId)
-                .orElseThrow(() -> new IllegalArgumentException("Xarid ro'yxati topilmadi: " + listId));
+                .orElseThrow(() -> new NotFoundException("SHOPPING_LIST_NOT_FOUND", "Xarid ro'yxati topilmadi: " + listId));
         checkOwnership(list);
 
         ShoppingListItem item = list.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Element topilmadi: " + itemId));
+                .orElseThrow(() -> new NotFoundException("ITEM_NOT_FOUND", "Element topilmadi: " + itemId));
 
         item.setStatus(request.getStatus());
 
@@ -136,7 +137,7 @@ public class ShoppingListService {
 
     public void delete(Long id) {
         ShoppingList list = shoppingListRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Xarid ro'yxati topilmadi: " + id));
+                .orElseThrow(() -> new NotFoundException("SHOPPING_LIST_NOT_FOUND", "Xarid ro'yxati topilmadi: " + id));
         checkOwnership(list);
         shoppingListRepository.delete(list);
     }

@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/ingredients")
 @RequiredArgsConstructor
-@Tag(name = "Ingredientlar", description = "Mahsulotlar katalogi")
+@Tag(name = "Ingredientlar")
 public class IngredientController {
 
     private final IngredientService service;
 
     @GetMapping
-    @Operation(summary = "Barcha ingredientlar (sahifalash)")
+    @Operation(summary = "Barcha ingredientlar")
     public ResponseEntity<Page<IngredientDto>> findAll(
             @PageableDefault(size = 20, sort = "nameUz") Pageable pageable) {
         return ResponseEntity.ok(service.findAll(pageable));
@@ -38,14 +38,14 @@ public class IngredientController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Ingredient yaratish — faqat ADMIN")
+    @Operation(summary = "Ingredient yaratish — ADMIN")
     public ResponseEntity<IngredientDto> create(@Valid @RequestBody IngredientRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Ingredient yangilash — faqat ADMIN")
+    @Operation(summary = "Ingredient yangilash — ADMIN")
     public ResponseEntity<IngredientDto> update(@PathVariable Long id,
                                                  @Valid @RequestBody IngredientRequest request) {
         return ResponseEntity.ok(service.update(id, request));
@@ -53,7 +53,7 @@ public class IngredientController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Ingredient o'chirish — faqat ADMIN")
+    @Operation(summary = "Ingredient o'chirish — ADMIN")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

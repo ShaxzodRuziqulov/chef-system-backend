@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/recipes")
 @RequiredArgsConstructor
-@Tag(name = "Retseptlar", description = "Retseptlarni yaratish, qidirish va boshqarish")
+@Tag(name = "Retseptlar")
 public class RecipeController {
 
     private final RecipeService service;
 
     @GetMapping
-    @Operation(summary = "Barcha ochiq retseptlar (sahifalash)")
+    @Operation(summary = "Barcha ochiq retseptlar")
     public ResponseEntity<Page<RecipeDto>> findAll(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -35,7 +35,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Retseptni to'liq ma'lumotlari bilan olish")
+    @Operation(summary = "Retsept tafsilotlari")
     public ResponseEntity<RecipeDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
@@ -57,7 +57,7 @@ public class RecipeController {
     }
 
     @GetMapping("/difficulty/{level}")
-    @Operation(summary = "Qiyinlik darajasi bo'yicha retseptlar")
+    @Operation(summary = "Qiyinlik darajasi bo'yicha (EASY / MEDIUM / HARD / EXPERT)")
     public ResponseEntity<Page<RecipeDto>> findByDifficulty(
             @PathVariable DifficultyLevel level,
             @PageableDefault(size = 12) Pageable pageable) {
@@ -81,7 +81,7 @@ public class RecipeController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni qisman yangilash")
+    @Operation(summary = "Retseptni yangilash")
     public ResponseEntity<RecipeDto> update(@PathVariable Long id,
                                              @Valid @RequestBody RecipeUpdateRequest request) {
         return ResponseEntity.ok(service.update(id, request));
@@ -89,7 +89,7 @@ public class RecipeController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni o'chirish (soft delete)")
+    @Operation(summary = "Retseptni o'chirish")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
