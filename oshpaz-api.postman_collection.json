@@ -7,7 +7,8 @@
   "variable": [
     { "key": "baseUrl",      "value": "http://localhost:8090", "type": "string" },
     { "key": "accessToken",  "value": "", "type": "string" },
-    { "key": "refreshToken", "value": "", "type": "string" }
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "userId",       "value": "", "type": "string" }
   ],
   "item": [
 
@@ -21,8 +22,9 @@
             "script": { "exec": [
               "if (pm.response.code === 201) {",
               "  const j = pm.response.json();",
-              "  pm.collectionVariables.set('accessToken',  j.accessToken  || '');",
-              "  pm.collectionVariables.set('refreshToken', j.refreshToken || '');",
+              "  const d = j.data || j;",
+              "  pm.collectionVariables.set('accessToken',  d.accessToken  || d.access_token  || '');",
+              "  pm.collectionVariables.set('refreshToken', d.refreshToken || d.refresh_token || '');",
               "  pm.test('Register 201', () => pm.response.to.have.status(201));",
               "}"
             ]}
@@ -41,8 +43,9 @@
             "script": { "exec": [
               "if (pm.response.code === 200) {",
               "  const j = pm.response.json();",
-              "  pm.collectionVariables.set('accessToken',  j.access_token  || '');",
-              "  pm.collectionVariables.set('refreshToken', j.refresh_token || '');",
+              "  const d = j.data || j;",
+              "  pm.collectionVariables.set('accessToken',  d.accessToken  || d.access_token  || '');",
+              "  pm.collectionVariables.set('refreshToken', d.refreshToken || d.refresh_token || '');",
               "  pm.test('Login 200', () => pm.response.to.have.status(200));",
               "}"
             ]}
@@ -63,14 +66,27 @@
           }
         },
         {
+          "name": "Profilni yangilash",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/profile", "host": ["{{baseUrl}}"], "path": ["api","auth","profile"] },
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Yangi Ism\",\n  \"avatarUrl\": \"https://example.com/avatar.jpg\"\n}" }
+          }
+        },
+        {
           "name": "Refresh Token",
           "event": [{
             "listen": "test",
             "script": { "exec": [
               "if (pm.response.code === 200) {",
               "  const j = pm.response.json();",
-              "  pm.collectionVariables.set('accessToken',  j.access_token  || '');",
-              "  pm.collectionVariables.set('refreshToken', j.refresh_token || '');",
+              "  const d = j.data || j;",
+              "  pm.collectionVariables.set('accessToken',  d.accessToken  || d.access_token  || '');",
+              "  pm.collectionVariables.set('refreshToken', d.refreshToken || d.refresh_token || '');",
               "}"
             ]}
           }],
@@ -211,12 +227,27 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/api/ingredients?page=0&size=20&sort=nameUz",
+              "raw": "{{baseUrl}}/api/ingredients?page=0&size=20&sort=nameUz,asc",
               "host": ["{{baseUrl}}"], "path": ["api","ingredients"],
               "query": [
                 { "key": "page", "value": "0" },
                 { "key": "size", "value": "20" },
-                { "key": "sort", "value": "nameUz" }
+                { "key": "sort", "value": "nameUz,asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ingredient qidirish",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/ingredients/search?keyword=piyoz&page=0&size=10",
+              "host": ["{{baseUrl}}"], "path": ["api","ingredients","search"],
+              "query": [
+                { "key": "keyword", "value": "piyoz" },
+                { "key": "page",    "value": "0" },
+                { "key": "size",    "value": "10" }
               ]
             }
           }
@@ -282,7 +313,7 @@
           }
         },
         {
-          "name": "Retsept — ID bo'yicha (to'liq)",
+          "name": "Retsept — ID bo'yicha",
           "request": {
             "method": "GET",
             "url": { "raw": "{{baseUrl}}/api/recipes/1", "host": ["{{baseUrl}}"], "path": ["api","recipes","1"] }
@@ -318,7 +349,7 @@
           }
         },
         {
-          "name": "Qiyinlik bo'yicha (EASY / MEDIUM / HARD / EXPERT)",
+          "name": "Qiyinlik bo'yicha (EASY/MEDIUM/HARD/EXPERT)",
           "request": {
             "method": "GET",
             "url": {
@@ -355,11 +386,23 @@
               { "key": "Content-Type",  "value": "application/json" }
             ],
             "url": { "raw": "{{baseUrl}}/api/recipes", "host": ["{{baseUrl}}"], "path": ["api","recipes"] },
-            "body": { "mode": "raw", "raw": "{\n  \"titleUz\": \"O'zbek oshi\",\n  \"titleRu\": \"Узбекский плов\",\n  \"titleEng\": \"Uzbek Plov\",\n  \"description\": \"An'anaviy O'zbek oshi\",\n  \"categoryId\": 1,\n  \"tagIds\": [1, 2],\n  \"prepTimeMinutes\": 30,\n  \"cookTimeMinutes\": 90,\n  \"servings\": 6,\n  \"difficultyLevel\": \"MEDIUM\",\n  \"imageUrl\": \"https://example.com/plov.jpg\",\n  \"visible\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"amount\": 500,\n      \"unit\": \"GRAM\",\n      \"notes\": \"Yuvib tozalangan\",\n      \"orderIndex\": 1\n    }\n  ],\n  \"steps\": [\n    {\n      \"stepNumber\": 1,\n      \"instruction\": \"Guruchni yuvib oling\",\n      \"durationMinutes\": 10\n    },\n    {\n      \"stepNumber\": 2,\n      \"instruction\": \"Sabzi va piyozni qovuring\",\n      \"durationMinutes\": 15\n    }\n  ],\n  \"nutritionalInfo\": {\n    \"caloriesPerServing\": 450,\n    \"proteinGrams\": 15,\n    \"fatGrams\": 18,\n    \"carbohydrateGrams\": 60\n  }\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"titleUz\": \"O'zbek oshi\",\n  \"titleRu\": \"Узбекский плов\",\n  \"titleEng\": \"Uzbek Plov\",\n  \"description\": \"An'anaviy O'zbek oshi\",\n  \"categoryId\": 1,\n  \"tagIds\": [1, 2],\n  \"prepTimeMinutes\": 30,\n  \"cookTimeMinutes\": 90,\n  \"servings\": 6,\n  \"difficultyLevel\": \"MEDIUM\",\n  \"imageUrl\": \"https://example.com/plov.jpg\",\n  \"visible\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"amount\": 500,\n      \"unit\": \"GRAM\",\n      \"notes\": \"Yuvib tozalangan\",\n      \"orderIndex\": 1\n    }\n  ],\n  \"steps\": [\n    {\n      \"stepNumber\": 1,\n      \"instruction\": \"Guruchni yuvib oling\",\n      \"durationMinutes\": 10\n    },\n    {\n      \"stepNumber\": 2,\n      \"instruction\": \"Sabzi va piyozni qovuring\",\n      \"durationMinutes\": 15\n    }\n  ],\n  \"nutritionalInfo\": {\n    \"caloriesPerServing\": 450,\n    \"proteinGrams\": 15,\n    \"fatGrams\": 18,\n    \"carbohydrateGrams\": 60,\n    \"fiberGrams\": 2,\n    \"sugarGrams\": 3,\n    \"sodiumMg\": 800\n  }\n}" }
           }
         },
         {
-          "name": "Retsept yangilash (PATCH)",
+          "name": "Retsept to'liq yangilash (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/recipes/1", "host": ["{{baseUrl}}"], "path": ["api","recipes","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"titleUz\": \"O'zbek oshi (to'liq yangilangan)\",\n  \"titleRu\": \"Узбекский плов (обновлённый)\",\n  \"titleEng\": \"Uzbek Plov (updated)\",\n  \"description\": \"Yangilangan tavsif\",\n  \"categoryId\": 1,\n  \"tagIds\": [1],\n  \"prepTimeMinutes\": 25,\n  \"cookTimeMinutes\": 80,\n  \"servings\": 8,\n  \"difficultyLevel\": \"HARD\",\n  \"imageUrl\": \"https://example.com/plov2.jpg\",\n  \"visible\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"amount\": 600,\n      \"unit\": \"GRAM\",\n      \"orderIndex\": 1\n    }\n  ],\n  \"steps\": [\n    {\n      \"stepNumber\": 1,\n      \"instruction\": \"Guruchni yuvib oling\",\n      \"durationMinutes\": 10\n    }\n  ],\n  \"nutritionalInfo\": {\n    \"caloriesPerServing\": 480,\n    \"proteinGrams\": 16,\n    \"fatGrams\": 20,\n    \"carbohydrateGrams\": 62\n  }\n}" }
+          }
+        },
+        {
+          "name": "Retsept qisman yangilash (PATCH)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -449,7 +492,7 @@
         {
           "name": "Rejani faollashtirish",
           "request": {
-            "method": "PATCH",
+            "method": "PUT",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
             "url": { "raw": "{{baseUrl}}/api/meal-plans/1/activate", "host": ["{{baseUrl}}"], "path": ["api","meal-plans","1","activate"] }
           }
@@ -492,7 +535,7 @@
           }
         },
         {
-          "name": "🪄 Rejadan avtomatik yaratish",
+          "name": "Rejadan avtomatik yaratish",
           "request": {
             "method": "POST",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
@@ -517,6 +560,33 @@
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
             "url": { "raw": "{{baseUrl}}/api/shopping-lists/1", "host": ["{{baseUrl}}"], "path": ["api","shopping-lists","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📁 File Upload",
+      "item": [
+        {
+          "name": "Rasm yuklash",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/upload/image", "host": ["{{baseUrl}}"], "path": ["api","upload","image"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Max 5MB. Ruxsat etilgan turlar: image/jpeg, image/png, image/webp, image/gif"
+                }
+              ]
+            }
           }
         }
       ]

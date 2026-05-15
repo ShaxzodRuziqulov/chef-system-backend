@@ -26,6 +26,11 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
+    public Page<IngredientDto> search(String keyword, Pageable pageable) {
+        return repository.searchByName(keyword, pageable).map(mapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
     public IngredientDto findById(Long id) {
         return mapper.toDto(getById(id));
     }

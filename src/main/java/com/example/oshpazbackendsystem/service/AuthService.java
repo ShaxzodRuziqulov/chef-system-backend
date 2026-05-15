@@ -2,6 +2,7 @@ package com.example.oshpazbackendsystem.service;
 
 import com.example.oshpazbackendsystem.dto.LoginRequest;
 import com.example.oshpazbackendsystem.dto.RegisterRequest;
+import com.example.oshpazbackendsystem.dto.UpdateProfileRequest;
 import com.example.oshpazbackendsystem.dto.response.AuthResponse;
 import com.example.oshpazbackendsystem.exeption.ConflictException;
 import com.example.oshpazbackendsystem.dto.response.AuthTokenResponse;
@@ -94,6 +95,17 @@ public class AuthService {
         response.setRefreshToken(jwtService.generateRefreshToken(authUser));
         response.setUser(toAuthUserResponse(authUser));
         return response;
+    }
+
+    public AuthUserResponse updateProfile(User user, UpdateProfileRequest request) {
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getAvatarUrl() != null) {
+            user.setAvatarUrl(request.getAvatarUrl());
+        }
+        userRepository.save(user);
+        return toAuthUserResponse(user);
     }
 
     public AuthUserResponse toAuthUserResponse(User user) {

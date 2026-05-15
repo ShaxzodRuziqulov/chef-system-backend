@@ -1,8 +1,21 @@
 server:
   port: 8090
+
+app:
+  upload:
+    dir: uploads/images
+    base-url: http://localhost:8090
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:5174,http://localhost:5175
+
 spring:
   application:
     name: oshpaz-backend-system
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 6MB
   datasource:
     url: jdbc:postgresql://localhost:5432/chef
     username: postgres
@@ -10,7 +23,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 security:

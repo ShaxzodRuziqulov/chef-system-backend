@@ -9,6 +9,7 @@ import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.*;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,8 +42,14 @@ public class RecipeService {
 
     @Transactional(readOnly = true)
     public RecipeDto findById(Long id) {
+        // findByIdWithDetails: ingredients + tags → JOIN FETCH (bitta bag chekloviga rioya)
         Recipe recipe = recipeRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id));
+
+        // steps va images ni transaksiya ichida alohida yuklaymiz (MultipleBagFetchException oldini olish)
+        Hibernate.initialize(recipe.getSteps());
+        Hibernate.initialize(recipe.getImages());
+
         return toDto(recipe);
     }
 
@@ -271,7 +278,10 @@ public class RecipeService {
                 .categoryNameUz(r.getCategory() != null ? r.getCategory().getNameUz() : null)
                 .prepTimeMinutes(r.getPrepTimeMinutes())
                 .cookTimeMinutes(r.getCookTimeMinutes())
-                .totalTimeMinutes(r.getPrepTimeMinutes() + r.getCookTimeMinutes())
+                .totalTimeMinutes(
+                        (r.getPrepTimeMinutes() != null ? r.getPrepTimeMinutes() : 0) +
+                        (r.getCookTimeMinutes()  != null ? r.getCookTimeMinutes()  : 0)
+                )
                 .servings(r.getServings())
                 .difficultyLevel(r.getDifficultyLevel())
                 .imageUrl(r.getImageUrl())

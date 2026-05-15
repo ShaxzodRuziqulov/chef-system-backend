@@ -2,14 +2,15 @@ package com.example.oshpazbackendsystem.controller;
 
 import com.example.oshpazbackendsystem.dto.RecipeCreateRequest;
 import com.example.oshpazbackendsystem.dto.RecipeUpdateRequest;
+import com.example.oshpazbackendsystem.dto.response.PageResponse;
 import com.example.oshpazbackendsystem.dto.response.RecipeDto;
 import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
+import com.example.oshpazbackendsystem.exception.ApiResponse;
 import com.example.oshpazbackendsystem.service.RecipeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -28,63 +29,71 @@ public class RecipeController {
 
     @GetMapping
     @Operation(summary = "Barcha ochiq retseptlar")
-    public ResponseEntity<Page<RecipeDto>> findAll(
+    public ResponseEntity<ApiResponse<PageResponse<RecipeDto>>> findAll(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+        return ResponseEntity.ok(ApiResponse.ok(PageResponse.of(service.findAll(pageable))));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Retsept tafsilotlari")
-    public ResponseEntity<RecipeDto> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    public ResponseEntity<ApiResponse<RecipeDto>> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok(service.findById(id)));
     }
 
     @GetMapping("/search")
     @Operation(summary = "Ko'p tilli qidiruv (uz/ru/eng)")
-    public ResponseEntity<Page<RecipeDto>> search(
+    public ResponseEntity<ApiResponse<PageResponse<RecipeDto>>> search(
             @RequestParam String keyword,
             @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(service.search(keyword, pageable));
+        return ResponseEntity.ok(ApiResponse.ok(PageResponse.of(service.search(keyword, pageable))));
     }
 
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "Kategoriya bo'yicha retseptlar")
-    public ResponseEntity<Page<RecipeDto>> findByCategory(
+    public ResponseEntity<ApiResponse<PageResponse<RecipeDto>>> findByCategory(
             @PathVariable Long categoryId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(service.findByCategory(categoryId, pageable));
+        return ResponseEntity.ok(ApiResponse.ok(PageResponse.of(service.findByCategory(categoryId, pageable))));
     }
 
     @GetMapping("/difficulty/{level}")
     @Operation(summary = "Qiyinlik darajasi bo'yicha (EASY / MEDIUM / HARD / EXPERT)")
-    public ResponseEntity<Page<RecipeDto>> findByDifficulty(
+    public ResponseEntity<ApiResponse<PageResponse<RecipeDto>>> findByDifficulty(
             @PathVariable DifficultyLevel level,
             @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(service.findByDifficulty(level, pageable));
+        return ResponseEntity.ok(ApiResponse.ok(PageResponse.of(service.findByDifficulty(level, pageable))));
     }
 
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Mening retseptlarim")
-    public ResponseEntity<Page<RecipeDto>> findMyRecipes(
+    public ResponseEntity<ApiResponse<PageResponse<RecipeDto>>> findMyRecipes(
             @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(service.findMyRecipes(pageable));
+        return ResponseEntity.ok(ApiResponse.ok(PageResponse.of(service.findMyRecipes(pageable))));
     }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Yangi retsept yaratish")
-    public ResponseEntity<RecipeDto> create(@Valid @RequestBody RecipeCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+    public ResponseEntity<ApiResponse<RecipeDto>> create(@Valid @RequestBody RecipeCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(service.create(request)));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Retseptni yangilash (to'liq)")
+    public ResponseEntity<ApiResponse<RecipeDto>> update(@PathVariable Long id,
+                                             @Valid @RequestBody RecipeUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni yangilash")
-    public ResponseEntity<RecipeDto> update(@PathVariable Long id,
-                                             @Valid @RequestBody RecipeUpdateRequest request) {
-        return ResponseEntity.ok(service.update(id, request));
+    @Operation(summary = "Retseptni yangilash (qisman)")
+    public ResponseEntity<ApiResponse<RecipeDto>> patch(@PathVariable Long id,
+                                            @Valid @RequestBody RecipeUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
     @DeleteMapping("/{id}")

@@ -3,6 +3,8 @@ package com.example.oshpazbackendsystem.service.security;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,17 @@ public class CurrentUserService {
 
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication != null ? authentication.getName() : null;
+
+        // Anonymous yoki autentifikatsiya qilinmagan so'rov → 401
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new BadCredentialsException("Tizimga kirish talab etiladi");
+        }
+
+        String username = authentication.getName();
         return userRepository.findWithRolesByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadCredentialsException("Foydalanuvchi topilmadi: " + username));
     }
 
     public UUID getCurrentUserId() {

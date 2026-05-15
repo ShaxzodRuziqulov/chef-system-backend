@@ -58,11 +58,9 @@ public class RecipeCreateRequest {
     private boolean visible = true;
 
     @Valid
-    @NotEmpty(message = "Kamida bitta ingredient bo'lishi kerak")
     private List<RecipeIngredientRequest> ingredients;
 
     @Valid
-    @NotEmpty(message = "Kamida bitta bosqich bo'lishi kerak")
     private List<RecipeStepRequest> steps;
 
     @Valid

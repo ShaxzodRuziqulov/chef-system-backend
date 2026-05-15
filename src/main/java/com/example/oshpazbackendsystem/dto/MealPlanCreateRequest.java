@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ public class MealPlanCreateRequest {
     private String name;
 
     @NotNull(message = "Hafta boshlanish sanasi kiritilishi shart")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate weekStartDate;
 
     private String notes;

@@ -2,8 +2,10 @@ package com.example.oshpazbackendsystem.controller;
 
 import com.example.oshpazbackendsystem.dto.LoginRequest;
 import com.example.oshpazbackendsystem.dto.RegisterRequest;
+import com.example.oshpazbackendsystem.dto.UpdateProfileRequest;
 import com.example.oshpazbackendsystem.dto.response.*;
 import com.example.oshpazbackendsystem.entity.User;
+import com.example.oshpazbackendsystem.exception.ApiResponse;
 import com.example.oshpazbackendsystem.service.AuthService;
 import com.example.oshpazbackendsystem.service.JwtService;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
@@ -28,33 +30,38 @@ public class AuthController {
     private final CurrentUserService currentUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created(authService.register(request)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthTokenResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthTokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         User user = authService.login(request);
-        return ResponseEntity.ok(authService.buildAuthTokenResponse(user));
+        return ResponseEntity.ok(ApiResponse.ok(authService.buildAuthTokenResponse(user)));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenPairResponse> refresh(@RequestBody RefreshTokenRequestDto dto) {
+    public ResponseEntity<ApiResponse<TokenPairResponse>> refresh(@RequestBody RefreshTokenRequestDto dto) {
         User authUser = authService.refresh(dto);
         TokenPairResponse response = new TokenPairResponse();
         response.setAccessToken(jwtService.generateToken(authUser));
         response.setRefreshToken(jwtService.generateRefreshToken(authUser));
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AuthUserResponse> authenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new IllegalArgumentException("Authentication required");
-        }
+    public ResponseEntity<ApiResponse<AuthUserResponse>> authenticatedUser() {
         User currentUser = currentUserService.getCurrentUser();
-        return ResponseEntity.ok(authService.toAuthUserResponse(currentUser));
+        return ResponseEntity.ok(ApiResponse.ok(authService.toAuthUserResponse(currentUser)));
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<ApiResponse<AuthUserResponse>> updateProfile(
+            @Valid @RequestBody UpdateProfileRequest request) {
+        User currentUser = currentUserService.getCurrentUser();
+        AuthUserResponse updated = authService.updateProfile(currentUser, request);
+        return ResponseEntity.ok(ApiResponse.ok(updated));
     }
 
     @PostMapping("/logout")

@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
@@ -42,6 +43,16 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    // ── 400 — JSON parse / LocalDate format xatosi ───────────────────────────
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotReadable(HttpMessageNotReadableException ex) {
+        String msg = "So'rov formati noto'g'ri";
+        if (ex.getMessage() != null && ex.getMessage().contains("LocalDate")) {
+            msg = "Sana formati noto'g'ri, to'g'ri format: yyyy-MM-dd (masalan: 2025-05-19)";
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.error(400, msg));
     }
 
     // ── 400 — BadRequestException ────────────────────────────────────────────
@@ -147,9 +158,19 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(403, ex.getMessage()));
     }
 
+    // ── 500 — RuntimeException (diagnostika uchun log) ──────────────────────
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRuntime(RuntimeException ex) {
+        ex.printStackTrace();
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(500, "Ichki xato: " + ex.getMessage()));
+    }
+
     // ── 500 — Kutilmagan xato ────────────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+        ex.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(500, "Serverda xatolik yuz berdi, keyinroq urinib ko'ring"));

@@ -11,7 +11,24 @@
       "Bash(lsof -ti:5173,5174,5175,5176)",
       "Bash(netstat -ano)",
       "Bash(taskkill /F /PID 14816 /PID 18596 /PID 12636 /PID 2064)",
-      "Bash(npm i *)"
+      "Bash(npm i *)",
+      "Read(//d/12/**)",
+      "Bash(npm create *)",
+      "Bash(mkdir -p D:/12/oshpaz-frontend/src/services D:/12/oshpaz-frontend/src/stores D:/12/oshpaz-frontend/src/router D:/12/oshpaz-frontend/src/pages D:/12/oshpaz-frontend/src/components D:/12/oshpaz-frontend/src/composables)",
+      "Bash(./mvnw compile *)",
+      "Bash(xargs grep -l \"authorId\")",
+      "Bash(xargs grep -l \"authorId\\\\|authorFullName\")",
+      "Bash(node -e ' *)",
+      "Bash(xargs grep -n \"error\\\\|static\")",
+      "Bash(npx tsc *)",
+      "Bash(cd \"/mnt/d/12/chef-frontend-system\" && npx tsc --noEmit 2>&1 | head -40)",
+      "Read(//mnt/**)",
+      "Read(//d//**)",
+      "Bash(cmd.exe /c \"cd D:\\\\12\\\\chef-frontend-system && npx tsc --noEmit 2>&1\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8090/api/categories)",
+      "Bash(curl -s -X POST http://localhost:8090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"1234\"}')",
+      "Bash(curl -s http://localhost:8090/api/categories -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInRva2VuX3R5cGUiOiJhY2Nlc3MiLCJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODg0Nzg5NiwiZXhwIjoxNzc4OTM0Mjk2fQ.vh6TBwh1BPCL5UqT8dm5lFvAxOu9vgjfofblvrk3DZ4')",
+      "Bash(curl -s \"http://localhost:8090/api/ingredients?page=0&size=20\")"
     ]
   }
 }
