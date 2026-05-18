@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-drop-meal-plan-entry-unique
+      author: shaxzod
+      comment: "Allow multiple meals per meal time in the same day (remove unique constraint on meal_plan_id+day_of_week+meal_type)"
+      changes:
+        - dropUniqueConstraint:
+            tableName: meal_plan_entries
+            constraintName: uq_meal_plan_day_type

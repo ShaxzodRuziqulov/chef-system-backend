@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class ShoppingList extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private boolean completed = false;
+
+    // Ro'yxat qayta yaratilgan vaqt (faqat generate qilinganda o'zgaradi)
+    @Column
+    private LocalDateTime generatedAt;
 
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default

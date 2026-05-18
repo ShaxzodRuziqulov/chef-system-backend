@@ -2,6 +2,7 @@ package com.example.oshpazbackendsystem.controller;
 
 import com.example.oshpazbackendsystem.dto.MealPlanCreateRequest;
 import com.example.oshpazbackendsystem.dto.MealPlanEntryRequest;
+import com.example.oshpazbackendsystem.dto.MealPlanUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.MealPlanResponse;
 import com.example.oshpazbackendsystem.dto.response.PageResponse;
 import com.example.oshpazbackendsystem.exception.ApiResponse;
@@ -61,6 +62,14 @@ public class MealPlanController {
             @PathVariable Long id,
             @PathVariable Long entryId) {
         return ResponseEntity.ok(ApiResponse.ok(service.removeEntry(id, entryId)));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Rejani tahrirlash")
+    public ResponseEntity<ApiResponse<MealPlanResponse>> update(
+            @PathVariable Long id,
+            @Valid @RequestBody MealPlanUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
     @PutMapping("/{id}/activate")

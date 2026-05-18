@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-shopping-list-generated-at
+      author: shaxzod
+      changes:
+        - addColumn:
+            tableName: shopping_lists
+            columns:
+              - column:
+                  name: generated_at
+                  type: timestamp
+                  constraints:
+                    nullable: true

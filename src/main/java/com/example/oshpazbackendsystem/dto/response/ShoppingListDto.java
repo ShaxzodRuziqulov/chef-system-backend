@@ -24,6 +24,9 @@ public class ShoppingListDto {
     private Long mealPlanId;
     private String mealPlanName;
 
+    // Ro'yxat oxirgi marta qayta yaratilgan vaqt
+    private LocalDateTime generatedAt;
+
     // Ro'yxat
     private String name;
     private boolean completed;

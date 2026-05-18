@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -161,7 +164,7 @@ public class GlobalExceptionHandler {
     // ── 500 — RuntimeException (diagnostika uchun log) ──────────────────────
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleRuntime(RuntimeException ex) {
-        ex.printStackTrace();
+        log.error("RuntimeException: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(500, "Ichki xato: " + ex.getMessage()));
@@ -170,7 +173,7 @@ public class GlobalExceptionHandler {
     // ── 500 — Kutilmagan xato ────────────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
-        ex.printStackTrace();
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(500, "Serverda xatolik yuz berdi, keyinroq urinib ko'ring"));

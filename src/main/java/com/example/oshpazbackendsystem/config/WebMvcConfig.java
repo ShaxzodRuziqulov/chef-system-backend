@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.config;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,7 +19,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private String uploadDir;
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         String absolutePath = Paths.get(uploadDir).toAbsolutePath().toString();
         // OS ga bog'liq bo'lgan path separator ni to'g'rilash
         if (!absolutePath.endsWith("/") && !absolutePath.endsWith("\\")) {

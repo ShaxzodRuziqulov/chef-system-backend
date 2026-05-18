@@ -16,12 +16,7 @@ import java.time.DayOfWeek;
         @Index(name = "idx_meal_plan_entries_day",       columnList = "day_of_week"),
         @Index(name = "idx_meal_plan_entries_meal_type", columnList = "meal_type")
     },
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uq_meal_plan_day_type",
-            columnNames = {"meal_plan_id", "day_of_week", "meal_type"}
-        )
-    }
+    uniqueConstraints = {}
 )
 @Getter
 @Setter

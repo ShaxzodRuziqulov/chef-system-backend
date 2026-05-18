@@ -1,0 +1,454 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-init-schema
+      author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: users
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: username, type: varchar(50), constraints: { nullable: false, unique: true } }
+              - column: { name: email, type: varchar(100), constraints: { nullable: false, unique: true } }
+              - column: { name: password, type: varchar(255), constraints: { nullable: false } }
+              - column: { name: full_name, type: varchar(100) }
+              - column: { name: avatar_url, type: varchar(500) }
+              - column: { name: role, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: active, type: boolean, constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: categories
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name_uz, type: varchar(100), constraints: { nullable: false, unique: true } }
+              - column: { name: name_ru, type: varchar(100) }
+              - column: { name: name_eng, type: varchar(100) }
+              - column: { name: description, type: varchar(500) }
+              - column: { name: icon_url, type: varchar(500) }
+              - column: { name: color_code, type: varchar(10) }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: ingredients
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name_uz, type: varchar(100), constraints: { nullable: false } }
+              - column: { name: name_ru, type: varchar(100) }
+              - column: { name: name_eng, type: varchar(100) }
+              - column: { name: description, type: varchar(500) }
+              - column: { name: image_url, type: varchar(500) }
+              - column: { name: default_unit, type: varchar(20) }
+              - column: { name: calories_per100g, type: double }
+              - column: { name: allergen, type: boolean, constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: tags
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name_uz, type: varchar(50), constraints: { nullable: false, unique: true } }
+              - column: { name: name_ru, type: varchar(50) }
+              - column: { name: name_eng, type: varchar(50) }
+              - column: { name: description, type: varchar(255) }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: recipes
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: title_uz, type: varchar(200), constraints: { nullable: false } }
+              - column: { name: title_ru, type: varchar(200) }
+              - column: { name: title_eng, type: varchar(200) }
+              - column: { name: description, type: text }
+              - column: { name: prep_time_minutes, type: int, constraints: { nullable: false } }
+              - column: { name: cook_time_minutes, type: int, constraints: { nullable: false } }
+              - column: { name: servings, type: int, constraints: { nullable: false } }
+              - column: { name: difficulty_level, type: varchar(10), constraints: { nullable: false } }
+              - column: { name: image_url, type: varchar(500) }
+              - column: { name: video_url, type: varchar(500) }
+              - column: { name: visible, type: boolean, constraints: { nullable: false } }
+              - column: { name: deleted, type: boolean, constraints: { nullable: false } }
+              - column: { name: view_count, type: bigint, constraints: { nullable: false } }
+              - column: { name: average_rating, type: double }
+              - column: { name: rating_count, type: int, constraints: { nullable: false } }
+              - column: { name: version, type: bigint }
+              - column: { name: category_id, type: bigint }
+              - column: { name: author_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: recipe_tags
+            columns:
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: tag_id, type: bigint, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: recipe_ingredients
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: ingredient_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: amount, type: double, constraints: { nullable: false } }
+              - column: { name: unit, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: notes, type: varchar(255) }
+              - column: { name: order_index, type: int, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: recipe_steps
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: step_number, type: int, constraints: { nullable: false } }
+              - column: { name: instruction, type: text, constraints: { nullable: false } }
+              - column: { name: image_url, type: varchar(500) }
+              - column: { name: duration_minutes, type: int }
+
+        - createTable:
+            tableName: recipe_images
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: image_url, type: varchar(500), constraints: { nullable: false } }
+              - column: { name: is_primary, type: boolean, constraints: { nullable: false } }
+              - column: { name: caption, type: varchar(255) }
+              - column: { name: order_index, type: int, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: nutritional_info
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false, unique: true } }
+              - column: { name: calories_per_serving, type: double }
+              - column: { name: protein_grams, type: double }
+              - column: { name: fat_grams, type: double }
+              - column: { name: carbohydrate_grams, type: double }
+              - column: { name: fiber_grams, type: double }
+              - column: { name: sugar_grams, type: double }
+              - column: { name: sodium_mg, type: double }
+
+        - createTable:
+            tableName: meal_plans
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: name, type: varchar(100), constraints: { nullable: false } }
+              - column: { name: week_start_date, type: date, constraints: { nullable: false } }
+              - column: { name: week_end_date, type: date, constraints: { nullable: false } }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: notes, type: text }
+              - column: { name: version, type: bigint }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: meal_plan_entries
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: meal_plan_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: recipe_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: day_of_week, type: varchar(15), constraints: { nullable: false } }
+              - column: { name: meal_type, type: varchar(15), constraints: { nullable: false } }
+              - column: { name: servings, type: int, constraints: { nullable: false } }
+              - column: { name: notes, type: varchar(255) }
+
+        - createTable:
+            tableName: shopping_lists
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: meal_plan_id, type: bigint, constraints: { unique: true } }
+              - column: { name: name, type: varchar(100), constraints: { nullable: false } }
+              - column: { name: completed, type: boolean, constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } }
+
+        - createTable:
+            tableName: shopping_list_items
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: shopping_list_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: ingredient_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: amount, type: double, constraints: { nullable: false } }
+              - column: { name: unit, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: estimated_price, type: "numeric(10, 2)" }
+              - column: { name: notes, type: varchar(255) }
+              - column: { name: grocery_section, type: varchar(100) }
+
+        - addPrimaryKey:
+            tableName: recipe_tags
+            columnNames: recipe_id, tag_id
+            constraintName: pk_recipe_tags
+
+        - addForeignKeyConstraint:
+            baseTableName: recipes
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_recipes_category
+        - addForeignKeyConstraint:
+            baseTableName: recipes
+            baseColumnNames: author_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_recipes_author
+        - addForeignKeyConstraint:
+            baseTableName: recipe_tags
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_recipe_tags_recipe
+        - addForeignKeyConstraint:
+            baseTableName: recipe_tags
+            baseColumnNames: tag_id
+            referencedTableName: tags
+            referencedColumnNames: id
+            constraintName: fk_recipe_tags_tag
+        - addForeignKeyConstraint:
+            baseTableName: recipe_ingredients
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_recipe_ingredients_recipe
+        - addForeignKeyConstraint:
+            baseTableName: recipe_ingredients
+            baseColumnNames: ingredient_id
+            referencedTableName: ingredients
+            referencedColumnNames: id
+            constraintName: fk_recipe_ingredients_ingredient
+        - addForeignKeyConstraint:
+            baseTableName: recipe_steps
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_recipe_steps_recipe
+        - addForeignKeyConstraint:
+            baseTableName: recipe_images
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_recipe_images_recipe
+        - addForeignKeyConstraint:
+            baseTableName: nutritional_info
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_nutritional_info_recipe
+        - addForeignKeyConstraint:
+            baseTableName: meal_plans
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_meal_plans_user
+        - addForeignKeyConstraint:
+            baseTableName: meal_plan_entries
+            baseColumnNames: meal_plan_id
+            referencedTableName: meal_plans
+            referencedColumnNames: id
+            constraintName: fk_meal_plan_entries_plan
+        - addForeignKeyConstraint:
+            baseTableName: meal_plan_entries
+            baseColumnNames: recipe_id
+            referencedTableName: recipes
+            referencedColumnNames: id
+            constraintName: fk_meal_plan_entries_recipe
+        - addForeignKeyConstraint:
+            baseTableName: shopping_lists
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_shopping_lists_user
+        - addForeignKeyConstraint:
+            baseTableName: shopping_lists
+            baseColumnNames: meal_plan_id
+            referencedTableName: meal_plans
+            referencedColumnNames: id
+            constraintName: fk_shopping_lists_meal_plan
+        - addForeignKeyConstraint:
+            baseTableName: shopping_list_items
+            baseColumnNames: shopping_list_id
+            referencedTableName: shopping_lists
+            referencedColumnNames: id
+            constraintName: fk_shopping_list_items_list
+        - addForeignKeyConstraint:
+            baseTableName: shopping_list_items
+            baseColumnNames: ingredient_id
+            referencedTableName: ingredients
+            referencedColumnNames: id
+            constraintName: fk_shopping_list_items_ingredient
+
+        - addUniqueConstraint:
+            tableName: meal_plan_entries
+            columnNames: meal_plan_id, day_of_week, meal_type
+            constraintName: uq_meal_plan_day_type
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            unique: true
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            unique: true
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            tableName: categories
+            indexName: idx_categories_name_uz
+            unique: true
+            columns:
+              - column:
+                  name: name_uz
+        - createIndex:
+            tableName: ingredients
+            indexName: idx_ingredients_name_uz
+            columns:
+              - column:
+                  name: name_uz
+        - createIndex:
+            tableName: tags
+            indexName: idx_tags_name_uz
+            unique: true
+            columns:
+              - column:
+                  name: name_uz
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_title_uz
+            columns:
+              - column:
+                  name: title_uz
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_category_id
+            columns:
+              - column:
+                  name: category_id
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_author_id
+            columns:
+              - column:
+                  name: author_id
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_difficulty
+            columns:
+              - column:
+                  name: difficulty_level
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_deleted
+            columns:
+              - column:
+                  name: deleted
+        - createIndex:
+            tableName: recipes
+            indexName: idx_recipes_visible
+            columns:
+              - column:
+                  name: visible
+        - createIndex:
+            tableName: recipe_ingredients
+            indexName: idx_recipe_ingredients_recipe_id
+            columns:
+              - column:
+                  name: recipe_id
+        - createIndex:
+            tableName: recipe_ingredients
+            indexName: idx_recipe_ingredients_ingredient_id
+            columns:
+              - column:
+                  name: ingredient_id
+        - createIndex:
+            tableName: recipe_steps
+            indexName: idx_recipe_steps_recipe_id
+            columns:
+              - column:
+                  name: recipe_id
+        - createIndex:
+            tableName: recipe_images
+            indexName: idx_recipe_images_recipe_id
+            columns:
+              - column:
+                  name: recipe_id
+        - createIndex:
+            tableName: meal_plans
+            indexName: idx_meal_plans_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: meal_plans
+            indexName: idx_meal_plans_week_start
+            columns:
+              - column:
+                  name: week_start_date
+        - createIndex:
+            tableName: meal_plans
+            indexName: idx_meal_plans_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: meal_plan_entries
+            indexName: idx_meal_plan_entries_plan_id
+            columns:
+              - column:
+                  name: meal_plan_id
+        - createIndex:
+            tableName: meal_plan_entries
+            indexName: idx_meal_plan_entries_day
+            columns:
+              - column:
+                  name: day_of_week
+        - createIndex:
+            tableName: meal_plan_entries
+            indexName: idx_meal_plan_entries_meal_type
+            columns:
+              - column:
+                  name: meal_type
+        - createIndex:
+            tableName: shopping_lists
+            indexName: idx_shopping_lists_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: shopping_lists
+            indexName: idx_shopping_lists_meal_plan_id
+            columns:
+              - column:
+                  name: meal_plan_id
+        - createIndex:
+            tableName: shopping_list_items
+            indexName: idx_shopping_list_items_list_id
+            columns:
+              - column:
+                  name: shopping_list_id
+        - createIndex:
+            tableName: shopping_list_items
+            indexName: idx_shopping_list_items_ingredient_id
+            columns:
+              - column:
+                  name: ingredient_id
+        - createIndex:
+            tableName: shopping_list_items
+            indexName: idx_shopping_list_items_status
+            columns:
+              - column:
+                  name: status

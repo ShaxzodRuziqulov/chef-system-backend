@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-add-entries-updated-at
+      author: shaxzod
+      changes:
+        - addColumn:
+            tableName: meal_plans
+            columns:
+              - column:
+                  name: entries_updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: true

@@ -2,6 +2,7 @@ package com.example.oshpazbackendsystem.service;
 
 import com.example.oshpazbackendsystem.dto.MealPlanCreateRequest;
 import com.example.oshpazbackendsystem.dto.MealPlanEntryRequest;
+import com.example.oshpazbackendsystem.dto.MealPlanUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.MealPlanEntryDto;
 import com.example.oshpazbackendsystem.dto.response.MealPlanResponse;
 import com.example.oshpazbackendsystem.entity.MealPlan;
@@ -9,7 +10,6 @@ import com.example.oshpazbackendsystem.entity.MealPlanEntry;
 import com.example.oshpazbackendsystem.entity.Recipe;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.entity.enums.PlanStatus;
-import com.example.oshpazbackendsystem.exeption.ConflictException;
 import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.MealPlanEntryRepository;
 import com.example.oshpazbackendsystem.repository.MealPlanRepository;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,15 +81,6 @@ public class MealPlanService {
         Recipe recipe = recipeRepository.findById(request.getRecipeId())
                 .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + request.getRecipeId()));
 
-        // Bir kunda bir xil ovqat vaqtiga ikkita yozuv bo'lmasligi kerak (UniqueConstraint)
-        boolean exists = plan.getEntries().stream()
-                .anyMatch(e -> e.getDayOfWeek() == request.getDayOfWeek()
-                            && e.getMealType() == request.getMealType());
-        if (exists) {
-            throw new ConflictException("ENTRY_EXISTS",
-                    request.getDayOfWeek() + " kuni " + request.getMealType() + " allaqachon belgilangan");
-        }
-
         MealPlanEntry entry = MealPlanEntry.builder()
                 .mealPlan(plan)
                 .recipe(recipe)
@@ -99,6 +91,7 @@ public class MealPlanService {
                 .build();
 
         plan.getEntries().add(entry);
+        plan.setUpdatedAt(LocalDateTime.now());
         return toResponse(mealPlanRepository.save(plan));
     }
 
@@ -110,6 +103,15 @@ public class MealPlanService {
                 .orElseThrow(() -> new NotFoundException("ENTRY_NOT_FOUND", "Yozuv topilmadi: " + entryId));
 
         plan.getEntries().remove(entry);
+        plan.setUpdatedAt(LocalDateTime.now());
+        return toResponse(mealPlanRepository.save(plan));
+    }
+
+    public MealPlanResponse update(Long id, MealPlanUpdateRequest request) {
+        MealPlan plan = getMealPlan(id);
+        checkOwnership(plan);
+        plan.setName(request.getName());
+        plan.setNotes(request.getNotes());
         return toResponse(mealPlanRepository.save(plan));
     }
 

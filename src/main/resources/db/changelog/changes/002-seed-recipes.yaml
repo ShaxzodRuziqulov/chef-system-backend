@@ -1,0 +1,231 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-seed-recipes
+      author: codex
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: |
+              INSERT INTO users (id, username, email, password, full_name, role, active, created_at, updated_at)
+              VALUES (
+                  '00000000-0000-0000-0000-000000000001',
+                  'admin',
+                  'admin@email.com',
+                  '$2a$10$ur7UP69qi0Q9//rl9CWXVeI21BvH76wjeiOq.EJDqPwEZA98SDlD6',
+                  'Admin',
+                  'ADMIN',
+                  true,
+                  now(),
+                  now()
+              )
+              ON CONFLICT (username) DO NOTHING;
+
+              INSERT INTO categories (name_uz, name_ru, name_eng, description, icon_url, color_code, created_at, updated_at)
+              VALUES
+                  ('Milliy taomlar', 'Национальные блюда', 'National dishes', 'Ozbek milliy oshxonasi retseptlari', null, '#22c55e', now(), now()),
+                  ('Sho‘rvalar', 'Супы', 'Soups', 'Issiq suyuq taomlar', null, '#f97316', now(), now()),
+                  ('Salatlar', 'Салаты', 'Salads', 'Yengil va foydali salatlar', null, '#84cc16', now(), now()),
+                  ('Pishiriqlar', 'Выпечка', 'Bakery', 'Xamirli va tandir taomlari', null, '#eab308', now(), now()),
+                  ('Shirinliklar', 'Десерты', 'Desserts', 'Uy sharoitidagi shirinliklar', null, '#ec4899', now(), now())
+              ON CONFLICT (name_uz) DO NOTHING;
+
+              INSERT INTO tags (name_uz, name_ru, name_eng, description, created_at, updated_at)
+              VALUES
+                  ('Oson', 'Легко', 'Easy', 'Tayyorlash oson retseptlar', now(), now()),
+                  ('Oilaviy', 'Семейное', 'Family', 'Oila uchun mos retseptlar', now(), now()),
+                  ('Bayramona', 'Праздничное', 'Festive', 'Dasturxon uchun chiroyli taomlar', now(), now()),
+                  ('Tez', 'Быстро', 'Quick', 'Qisqa vaqtda tayyorlanadi', now(), now()),
+                  ('Foydali', 'Полезное', 'Healthy', 'Foydali masalliqli retseptlar', now(), now())
+              ON CONFLICT (name_uz) DO NOTHING;
+
+              INSERT INTO ingredients (name_uz, name_ru, name_eng, description, image_url, default_unit, calories_per100g, allergen, created_at, updated_at)
+              VALUES
+                  ('Guruch', 'Рис', 'Rice', 'Osh va garnirlar uchun guruch', null, 'GRAM', 130, false, now(), now()),
+                  ('Mol go‘shti', 'Говядина', 'Beef', 'Yumshoq mol go‘shti', null, 'GRAM', 250, false, now(), now()),
+                  ('Qo‘y go‘shti', 'Баранина', 'Lamb', 'Milliy taomlar uchun qo‘y go‘shti', null, 'GRAM', 294, false, now(), now()),
+                  ('Tovuq go‘shti', 'Курица', 'Chicken', 'Tovuq filesi yoki son qismi', null, 'GRAM', 165, false, now(), now()),
+                  ('Sabzi', 'Морковь', 'Carrot', 'Yangi sabzi', null, 'GRAM', 41, false, now(), now()),
+                  ('Piyoz', 'Лук', 'Onion', 'Oq yoki sariq piyoz', null, 'GRAM', 40, false, now(), now()),
+                  ('Kartoshka', 'Картофель', 'Potato', 'Yangi kartoshka', null, 'GRAM', 77, false, now(), now()),
+                  ('Pomidor', 'Помидор', 'Tomato', 'Yangi pomidor', null, 'GRAM', 18, false, now(), now()),
+                  ('Bodring', 'Огурец', 'Cucumber', 'Yangi bodring', null, 'GRAM', 15, false, now(), now()),
+                  ('Tuxum', 'Яйцо', 'Egg', 'Tovuq tuxumi', null, 'PIECE', 155, true, now(), now()),
+                  ('Un', 'Мука', 'Flour', 'Bug‘doy uni', null, 'GRAM', 364, true, now(), now()),
+                  ('Sut', 'Молоко', 'Milk', 'Sigir suti', null, 'MILLILITER', 42, true, now(), now()),
+                  ('Sariyog‘', 'Сливочное масло', 'Butter', 'Pishiriq va taomlar uchun', null, 'GRAM', 717, true, now(), now()),
+                  ('O‘simlik yog‘i', 'Растительное масло', 'Vegetable oil', 'Qovurish uchun yog‘', null, 'MILLILITER', 884, false, now(), now()),
+                  ('No‘xat', 'Нут', 'Chickpea', 'Sho‘rva va qaynatmalar uchun', null, 'GRAM', 164, false, now(), now()),
+                  ('Mosh', 'Маш', 'Mung bean', 'Moshxo‘rda uchun', null, 'GRAM', 105, false, now(), now()),
+                  ('Qatiq', 'Катык', 'Yogurt', 'Sovuq taomlar uchun qatiq', null, 'MILLILITER', 61, true, now(), now()),
+                  ('Shakar', 'Сахар', 'Sugar', 'Shirinliklar uchun', null, 'GRAM', 387, false, now(), now()),
+                  ('Tuz', 'Соль', 'Salt', 'Taomga qarab qo‘shiladi', null, 'TO_TASTE', 0, false, now(), now()),
+                  ('Zira', 'Зира', 'Cumin', 'Milliy ziravor', null, 'TEASPOON', 375, false, now(), now())
+              ON CONFLICT DO NOTHING;
+
+              INSERT INTO recipes (
+                  title_uz, title_ru, title_eng, description, prep_time_minutes, cook_time_minutes, servings,
+                  difficulty_level, image_url, video_url, visible, deleted, view_count, average_rating, rating_count,
+                  version, category_id, author_id, created_at, updated_at
+              )
+              SELECT recipe.title_uz, recipe.title_ru, recipe.title_eng, recipe.description, recipe.prep_time_minutes,
+                     recipe.cook_time_minutes, recipe.servings, recipe.difficulty_level, null, null, true, false,
+                     0, 0, 0, 0, c.id, u.id, now(), now()
+              FROM (
+                  VALUES
+                      ('O‘zbek palovi', 'Узбекский плов', 'Uzbek pilaf', 'Sabzi, guruch va go‘shtdan tayyorlanadigan klassik palov.', 35, 90, 6, 'HARD', 'Milliy taomlar'),
+                      ('Moshxo‘rda', 'Машхурда', 'Mung bean soup', 'Mosh, guruch va sabzavotli to‘yimli sho‘rva.', 20, 55, 5, 'MEDIUM', 'Sho‘rvalar'),
+                      ('Shurpa', 'Шурпа', 'Shurpa', 'Go‘sht va yirik sabzavotlar bilan tayyorlanadigan tiniq sho‘rva.', 25, 80, 6, 'MEDIUM', 'Sho‘rvalar'),
+                      ('Lag‘mon', 'Лагман', 'Lagman', 'Qo‘l cho‘zma xamir va sabzavotli qayla bilan tayyorlanadi.', 45, 60, 5, 'HARD', 'Milliy taomlar'),
+                      ('Manti', 'Манты', 'Manti', 'Go‘shtli qiymadan bug‘da pishiriladigan xamir taomi.', 50, 45, 6, 'HARD', 'Milliy taomlar'),
+                      ('Somsa', 'Самса', 'Samsa', 'Go‘sht va piyozli qatlama xamir pishirig‘i.', 40, 35, 8, 'MEDIUM', 'Pishiriqlar'),
+                      ('Achchiq-chuchuk', 'Аччик-чучук', 'Achichuk salad', 'Pomidor, bodring va piyozdan tayyorlanadigan tez salat.', 15, 0, 4, 'EASY', 'Salatlar'),
+                      ('Olivye salati', 'Салат оливье', 'Olivier salad', 'Kartoshka, tuxum, sabzi va tovuqli bayramona salat.', 25, 25, 6, 'EASY', 'Salatlar'),
+                      ('Tovuq sho‘rva', 'Куриный суп', 'Chicken soup', 'Yengil, uy sharoitida tez tayyorlanadigan tovuq sho‘rva.', 15, 45, 5, 'EASY', 'Sho‘rvalar'),
+                      ('Blinchik', 'Блинчики', 'Crepes', 'Sut, tuxum va undan tayyorlanadigan yupqa shirin blinchik.', 15, 20, 4, 'EASY', 'Shirinliklar')
+              ) AS recipe(title_uz, title_ru, title_eng, description, prep_time_minutes, cook_time_minutes, servings, difficulty_level, category_name)
+              JOIN categories c ON c.name_uz = recipe.category_name
+              JOIN users u ON u.username = 'admin'
+              WHERE NOT EXISTS (SELECT 1 FROM recipes r WHERE r.title_uz = recipe.title_uz);
+
+              INSERT INTO recipe_tags (recipe_id, tag_id)
+              SELECT r.id, t.id
+              FROM (
+                  VALUES
+                      ('O‘zbek palovi', 'Oilaviy'), ('O‘zbek palovi', 'Bayramona'),
+                      ('Moshxo‘rda', 'Foydali'), ('Moshxo‘rda', 'Oilaviy'),
+                      ('Shurpa', 'Oilaviy'), ('Shurpa', 'Bayramona'),
+                      ('Lag‘mon', 'Oilaviy'), ('Lag‘mon', 'Bayramona'),
+                      ('Manti', 'Oilaviy'), ('Manti', 'Bayramona'),
+                      ('Somsa', 'Oilaviy'), ('Somsa', 'Bayramona'),
+                      ('Achchiq-chuchuk', 'Oson'), ('Achchiq-chuchuk', 'Tez'),
+                      ('Olivye salati', 'Oson'), ('Olivye salati', 'Bayramona'),
+                      ('Tovuq sho‘rva', 'Oson'), ('Tovuq sho‘rva', 'Foydali'),
+                      ('Blinchik', 'Oson'), ('Blinchik', 'Tez')
+              ) AS rt(recipe_title, tag_name)
+              JOIN recipes r ON r.title_uz = rt.recipe_title
+              JOIN tags t ON t.name_uz = rt.tag_name
+              ON CONFLICT DO NOTHING;
+
+              INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, unit, notes, order_index)
+              SELECT r.id, i.id, ri.amount, ri.unit, ri.notes, ri.order_index
+              FROM (
+                  VALUES
+                      ('O‘zbek palovi', 'Guruch', 700, 'GRAM', null, 1),
+                      ('O‘zbek palovi', 'Qo‘y go‘shti', 600, 'GRAM', 'Yirik kubik qilib to‘g‘raladi', 2),
+                      ('O‘zbek palovi', 'Sabzi', 700, 'GRAM', 'Somoncha qilib to‘g‘raladi', 3),
+                      ('O‘zbek palovi', 'Piyoz', 250, 'GRAM', null, 4),
+                      ('O‘zbek palovi', 'O‘simlik yog‘i', 150, 'MILLILITER', null, 5),
+                      ('O‘zbek palovi', 'Zira', 1, 'TABLESPOON', null, 6),
+                      ('O‘zbek palovi', 'Tuz', 1, 'TO_TASTE', null, 7),
+                      ('Moshxo‘rda', 'Mosh', 250, 'GRAM', null, 1),
+                      ('Moshxo‘rda', 'Guruch', 100, 'GRAM', null, 2),
+                      ('Moshxo‘rda', 'Mol go‘shti', 300, 'GRAM', null, 3),
+                      ('Moshxo‘rda', 'Piyoz', 150, 'GRAM', null, 4),
+                      ('Moshxo‘rda', 'Sabzi', 150, 'GRAM', null, 5),
+                      ('Moshxo‘rda', 'Pomidor', 200, 'GRAM', null, 6),
+                      ('Shurpa', 'Qo‘y go‘shti', 700, 'GRAM', 'Suyakli bo‘lsa mazaliroq', 1),
+                      ('Shurpa', 'Kartoshka', 500, 'GRAM', null, 2),
+                      ('Shurpa', 'Sabzi', 250, 'GRAM', null, 3),
+                      ('Shurpa', 'Piyoz', 200, 'GRAM', null, 4),
+                      ('Shurpa', 'Pomidor', 250, 'GRAM', null, 5),
+                      ('Lag‘mon', 'Un', 500, 'GRAM', 'Xamir uchun', 1),
+                      ('Lag‘mon', 'Mol go‘shti', 450, 'GRAM', null, 2),
+                      ('Lag‘mon', 'Piyoz', 200, 'GRAM', null, 3),
+                      ('Lag‘mon', 'Sabzi', 200, 'GRAM', null, 4),
+                      ('Lag‘mon', 'Pomidor', 300, 'GRAM', null, 5),
+                      ('Lag‘mon', 'O‘simlik yog‘i', 80, 'MILLILITER', null, 6),
+                      ('Manti', 'Un', 600, 'GRAM', 'Xamir uchun', 1),
+                      ('Manti', 'Mol go‘shti', 600, 'GRAM', 'Qiymalanadi', 2),
+                      ('Manti', 'Piyoz', 400, 'GRAM', 'Mayda to‘g‘raladi', 3),
+                      ('Manti', 'O‘simlik yog‘i', 40, 'MILLILITER', null, 4),
+                      ('Somsa', 'Un', 700, 'GRAM', 'Xamir uchun', 1),
+                      ('Somsa', 'Mol go‘shti', 500, 'GRAM', null, 2),
+                      ('Somsa', 'Piyoz', 350, 'GRAM', null, 3),
+                      ('Somsa', 'Sariyog‘', 120, 'GRAM', 'Qatlama uchun', 4),
+                      ('Achchiq-chuchuk', 'Pomidor', 500, 'GRAM', null, 1),
+                      ('Achchiq-chuchuk', 'Bodring', 300, 'GRAM', null, 2),
+                      ('Achchiq-chuchuk', 'Piyoz', 100, 'GRAM', null, 3),
+                      ('Achchiq-chuchuk', 'Tuz', 1, 'TO_TASTE', null, 4),
+                      ('Olivye salati', 'Kartoshka', 400, 'GRAM', 'Qaynatilgan', 1),
+                      ('Olivye salati', 'Sabzi', 200, 'GRAM', 'Qaynatilgan', 2),
+                      ('Olivye salati', 'Tuxum', 4, 'PIECE', 'Qaynatilgan', 3),
+                      ('Olivye salati', 'Tovuq go‘shti', 300, 'GRAM', 'Qaynatilgan', 4),
+                      ('Tovuq sho‘rva', 'Tovuq go‘shti', 500, 'GRAM', null, 1),
+                      ('Tovuq sho‘rva', 'Kartoshka', 350, 'GRAM', null, 2),
+                      ('Tovuq sho‘rva', 'Sabzi', 150, 'GRAM', null, 3),
+                      ('Tovuq sho‘rva', 'Piyoz', 100, 'GRAM', null, 4),
+                      ('Blinchik', 'Un', 250, 'GRAM', null, 1),
+                      ('Blinchik', 'Sut', 500, 'MILLILITER', null, 2),
+                      ('Blinchik', 'Tuxum', 2, 'PIECE', null, 3),
+                      ('Blinchik', 'Shakar', 40, 'GRAM', null, 4),
+                      ('Blinchik', 'Sariyog‘', 40, 'GRAM', 'Eritilgan', 5)
+              ) AS ri(recipe_title, ingredient_name, amount, unit, notes, order_index)
+              JOIN recipes r ON r.title_uz = ri.recipe_title
+              JOIN ingredients i ON i.name_uz = ri.ingredient_name
+              WHERE NOT EXISTS (
+                  SELECT 1 FROM recipe_ingredients existing
+                  WHERE existing.recipe_id = r.id AND existing.ingredient_id = i.id AND existing.order_index = ri.order_index
+              );
+
+              INSERT INTO recipe_steps (recipe_id, step_number, instruction, image_url, duration_minutes)
+              SELECT r.id, rs.step_number, rs.instruction, null, rs.duration_minutes
+              FROM (
+                  VALUES
+                      ('O‘zbek palovi', 1, 'Qozonda yog‘ni qizdirib, go‘shtni qizarguncha qovuring.', 20),
+                      ('O‘zbek palovi', 2, 'Piyoz va sabzini solib, zirvakni past olovda dimlang.', 35),
+                      ('O‘zbek palovi', 3, 'Yuvilgan guruchni solib, suv va ziravor qo‘shib damlang.', 35),
+                      ('Moshxo‘rda', 1, 'Go‘sht, piyoz va sabzini yog‘da yengil qovuring.', 15),
+                      ('Moshxo‘rda', 2, 'Mosh va suv qo‘shib, mosh yorilguncha qaynating.', 30),
+                      ('Moshxo‘rda', 3, 'Guruch, pomidor va tuz solib pishirib oling.', 10),
+                      ('Shurpa', 1, 'Go‘shtni sovuq suvga solib, ko‘pigini olib qaynating.', 35),
+                      ('Shurpa', 2, 'Sabzavotlarni yirik qilib soling.', 30),
+                      ('Shurpa', 3, 'Tuzlab, sabzavotlar yumshaguncha past olovda pishiring.', 15),
+                      ('Lag‘mon', 1, 'Un, suv va tuzdan xamir qorib, tindiring.', 25),
+                      ('Lag‘mon', 2, 'Go‘sht va sabzavotlardan qayla tayyorlang.', 35),
+                      ('Lag‘mon', 3, 'Xamirni cho‘zib qaynatib, ustiga qayla solib torting.', 25),
+                      ('Manti', 1, 'Xamir qorib tindiring, go‘sht va piyozdan qiymani tayyorlang.', 30),
+                      ('Manti', 2, 'Xamirni yoyib, qiymani solib manti tuging.', 25),
+                      ('Manti', 3, 'Mantilarni bug‘da pishirib oling.', 45),
+                      ('Somsa', 1, 'Xamir qorib, sariyog‘ bilan qatlama qilib o‘rang.', 35),
+                      ('Somsa', 2, 'Go‘sht va piyozdan ichlik tayyorlang.', 15),
+                      ('Somsa', 3, 'Somsalarni shakllantirib, duxovkada qizartirib pishiring.', 35),
+                      ('Achchiq-chuchuk', 1, 'Pomidor, bodring va piyozni yupqa qilib to‘g‘rang.', 10),
+                      ('Achchiq-chuchuk', 2, 'Tuzlab, aralashtirib darhol dasturxonga torting.', 5),
+                      ('Olivye salati', 1, 'Kartoshka, sabzi, tuxum va tovuqni qaynatib sovuting.', 25),
+                      ('Olivye salati', 2, 'Barcha masalliqlarni kubik qilib to‘g‘rang.', 15),
+                      ('Olivye salati', 3, 'Tuzlab, mayonez yoki qatiq bilan aralashtiring.', 10),
+                      ('Tovuq sho‘rva', 1, 'Tovuqni suvda qaynatib, ko‘pigini oling.', 20),
+                      ('Tovuq sho‘rva', 2, 'Kartoshka, sabzi va piyozni soling.', 20),
+                      ('Tovuq sho‘rva', 3, 'Tuzlab, sabzavotlar pishguncha qaynatib oling.', 10),
+                      ('Blinchik', 1, 'Tuxum, sut, shakar va unni bir xil massa bo‘lguncha aralashtiring.', 10),
+                      ('Blinchik', 2, 'Tovada yupqa qilib ikkala tomonini pishiring.', 15),
+                      ('Blinchik', 3, 'Eritilgan sariyog‘ surtib, issiq holda torting.', 5)
+              ) AS rs(recipe_title, step_number, instruction, duration_minutes)
+              JOIN recipes r ON r.title_uz = rs.recipe_title
+              WHERE NOT EXISTS (
+                  SELECT 1 FROM recipe_steps existing
+                  WHERE existing.recipe_id = r.id AND existing.step_number = rs.step_number
+              );
+
+              INSERT INTO nutritional_info (
+                  recipe_id, calories_per_serving, protein_grams, fat_grams,
+                  carbohydrate_grams, fiber_grams, sugar_grams, sodium_mg
+              )
+              SELECT r.id, n.calories, n.protein, n.fat, n.carbs, n.fiber, n.sugar, n.sodium
+              FROM (
+                  VALUES
+                      ('O‘zbek palovi', 720, 28, 34, 78, 5, 7, 780),
+                      ('Moshxo‘rda', 410, 21, 15, 48, 9, 6, 640),
+                      ('Shurpa', 460, 30, 24, 28, 6, 8, 700),
+                      ('Lag‘mon', 620, 26, 22, 78, 7, 9, 820),
+                      ('Manti', 680, 31, 28, 72, 4, 5, 760),
+                      ('Somsa', 540, 20, 29, 48, 3, 4, 690),
+                      ('Achchiq-chuchuk', 75, 2, 1, 15, 4, 8, 250),
+                      ('Olivye salati', 390, 18, 24, 25, 4, 5, 590),
+                      ('Tovuq sho‘rva', 300, 27, 10, 25, 4, 5, 520),
+                      ('Blinchik', 340, 10, 15, 42, 2, 14, 310)
+              ) AS n(recipe_title, calories, protein, fat, carbs, fiber, sugar, sodium)
+              JOIN recipes r ON r.title_uz = n.recipe_title
+              ON CONFLICT (recipe_id) DO NOTHING;

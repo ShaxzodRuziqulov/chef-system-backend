@@ -4,6 +4,7 @@ import com.example.oshpazbackendsystem.exception.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,18 +44,7 @@ public class FileUploadController {
             @RequestParam("file") MultipartFile file) throws IOException {
 
         // ── Validatsiya ──────────────────────────────────────────
-        if (file.isEmpty())
-            throw new IllegalArgumentException("Fayl bo'sh");
-
-        if (file.getSize() > MAX_SIZE)
-            throw new IllegalArgumentException("Fayl hajmi 5 MB dan oshmasligi kerak");
-
-        if (!ALLOWED.contains(file.getContentType()))
-            throw new IllegalArgumentException("Faqat JPEG, PNG, WEBP, GIF formatlari qabul qilinadi");
-
-        // ── Fayl nomini yaratish ─────────────────────────────────
-        String original  = file.getOriginalFilename() != null ? file.getOriginalFilename() : "img";
-        String ext       = original.contains(".") ? original.substring(original.lastIndexOf('.')) : ".jpg";
+        String ext = getString(file);
         String fileName  = UUID.randomUUID().toString().replace("-", "") + ext;
 
         // ── Papkani yaratish va fayl saqlash ─────────────────────
@@ -67,5 +57,20 @@ public class FileUploadController {
         // ── URL qaytarish ────────────────────────────────────────
         String url = baseUrl + "/uploads/images/" + fileName;
         return ResponseEntity.ok(ApiResponse.ok(Map.of("url", url)));
+    }
+
+    private static @NonNull String getString(MultipartFile file) {
+        if (file.isEmpty())
+            throw new IllegalArgumentException("Fayl bo'sh");
+
+        if (file.getSize() > MAX_SIZE)
+            throw new IllegalArgumentException("Fayl hajmi 5 MB dan oshmasligi kerak");
+
+        if (!ALLOWED.contains(file.getContentType()))
+            throw new IllegalArgumentException("Faqat JPEG, PNG, WEBP, GIF formatlari qabul qilinadi");
+
+        // ── Fayl nomini yaratish ─────────────────────────────────
+        String original  = file.getOriginalFilename() != null ? file.getOriginalFilename() : "img";
+        return original.contains(".") ? original.substring(original.lastIndexOf('.')) : ".jpg";
     }
 }

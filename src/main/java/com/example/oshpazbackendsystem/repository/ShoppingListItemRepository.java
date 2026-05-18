@@ -25,6 +25,17 @@ public interface ShoppingListItemRepository extends JpaRepository<ShoppingListIt
     @Query("DELETE FROM ShoppingListItem i WHERE i.shoppingList.id = :listId")
     void deleteByShoppingListId(@Param("listId") Long listId);
 
+    // MealPlan ID bo'yicha tegishli ro'yxat elementlarini native SQL bilan o'chirish
+    // Native query Hibernate cache'ini chetlab o'tib to'g'ridan-to'g'ri DB ga boradi
+    @Modifying
+    @Query(value = """
+            DELETE FROM shopping_list_items
+            WHERE shopping_list_id IN (
+                SELECT id FROM shopping_lists WHERE meal_plan_id = :mealPlanId
+            )
+            """, nativeQuery = true)
+    void deleteItemsByMealPlanId(@Param("mealPlanId") Long mealPlanId);
+
     // Barcha elementlarni "sotib olindi" deb belgilash
     @Modifying
     @Query("""

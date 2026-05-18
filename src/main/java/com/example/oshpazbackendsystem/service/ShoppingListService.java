@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,43 +62,36 @@ public class ShoppingListService {
             throw new IllegalStateException("Bu rejaga kirish uchun ruxsat yo'q");
         }
 
-        // Agar allaqachon shu reja uchun ro'yxat bo'lsa, o'chirish va yangi yaratish
-        shoppingListRepository.findByMealPlanId(mealPlanId)
-                .ifPresent(shoppingListRepository::delete);
-
         // Barcha entry lardan ingredientlarni yig'ish
-        // Map<ingredientId, {ingredient, totalAmount, unit}>
         Map<Long, IngredientAccumulator> accumulatorMap = new HashMap<>();
-
         for (MealPlanEntry entry : plan.getEntries()) {
             Recipe recipe = entry.getRecipe();
             int servingsMultiplier = entry.getServings();
-
             for (RecipeIngredient ri : recipe.getIngredients()) {
                 Long ingredientId = ri.getIngredient().getId();
                 double scaledAmount = ri.getAmount() * servingsMultiplier;
-
                 accumulatorMap.merge(ingredientId,
                         new IngredientAccumulator(ri.getIngredient(), scaledAmount, ri.getUnit()),
-                        (existing, newVal) -> {
-                            existing.totalAmount += newVal.totalAmount;
-                            return existing;
-                        });
+                        (existing, newVal) -> { existing.totalAmount += newVal.totalAmount; return existing; });
             }
         }
 
-        // ShoppingList yaratish
-        ShoppingList shoppingList = ShoppingList.builder()
-                .user(user)
-                .mealPlan(plan)
-                .name(plan.getName() + " — xarid ro'yxati")
-                .completed(false)
-                .build();
-
-        shoppingListRepository.save(shoppingList);
-
-        // Elementlar yaratish
         List<ShoppingListItem> items = new ArrayList<>();
+
+        // Mavjud ro'yxatni yangilaymiz, yo'q bo'lsa yangisini yaratamiz
+        ShoppingList shoppingList = shoppingListRepository.findByMealPlanId(mealPlanId)
+                .orElseGet(() -> ShoppingList.builder()
+                        .user(user)
+                        .mealPlan(plan)
+                        .name(plan.getName() + " — xarid ro'yxati")
+                        .completed(false)
+                        .build());
+
+        shoppingList.setName(plan.getName() + " — xarid ro'yxati");
+        shoppingList.setCompleted(false);
+        shoppingList.setGeneratedAt(LocalDateTime.now());
+        shoppingList.getItems().clear();   // orphanRemoval=true → eski itemlar o'chadi
+
         for (IngredientAccumulator acc : accumulatorMap.values()) {
             items.add(ShoppingListItem.builder()
                     .shoppingList(shoppingList)
@@ -107,7 +101,7 @@ public class ShoppingListService {
                     .status(ShoppingItemStatus.PENDING)
                     .build());
         }
-        shoppingList.setItems(items);
+        shoppingList.getItems().addAll(items);
 
         return toDto(shoppingListRepository.save(shoppingList));
     }
@@ -189,10 +183,12 @@ public class ShoppingListService {
                 .userId(sl.getUser().getId())
                 .mealPlanId(sl.getMealPlan() != null ? sl.getMealPlan().getId() : null)
                 .mealPlanName(sl.getMealPlan() != null ? sl.getMealPlan().getName() : null)
+                .generatedAt(sl.getGeneratedAt())
                 .name(sl.getName())
                 .completed(sl.isCompleted())
                 .items(items)
                 .createdAt(sl.getCreatedAt())
+                .updatedAt(sl.getUpdatedAt())
                 .build();
     }
 }
