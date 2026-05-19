@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.service;
 
+import com.example.oshpazbackendsystem.dto.ChangePasswordRequest;
 import com.example.oshpazbackendsystem.dto.LoginRequest;
 import com.example.oshpazbackendsystem.dto.RegisterRequest;
 import com.example.oshpazbackendsystem.dto.UpdateProfileRequest;
@@ -106,6 +107,14 @@ public class AuthService {
         }
         userRepository.save(user);
         return toAuthUserResponse(user);
+    }
+
+    public void changePassword(User user, ChangePasswordRequest request) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Joriy parol noto'g'ri");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
     public AuthUserResponse toAuthUserResponse(User user) {

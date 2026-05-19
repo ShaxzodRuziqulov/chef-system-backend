@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.controller;
 
+import com.example.oshpazbackendsystem.dto.ChangePasswordRequest;
 import com.example.oshpazbackendsystem.dto.LoginRequest;
 import com.example.oshpazbackendsystem.dto.RegisterRequest;
 import com.example.oshpazbackendsystem.dto.UpdateProfileRequest;
@@ -62,6 +63,14 @@ public class AuthController {
         User currentUser = currentUserService.getCurrentUser();
         AuthUserResponse updated = authService.updateProfile(currentUser, request);
         return ResponseEntity.ok(ApiResponse.ok(updated));
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+        User currentUser = currentUserService.getCurrentUser();
+        authService.changePassword(currentUser, request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")

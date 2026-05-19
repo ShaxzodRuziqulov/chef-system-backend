@@ -29,7 +29,10 @@
       "Bash(curl -s -X POST http://localhost:8090/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"1234\"}')",
       "Bash(curl -s http://localhost:8090/api/categories -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInRva2VuX3R5cGUiOiJhY2Nlc3MiLCJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODg0Nzg5NiwiZXhwIjoxNzc4OTM0Mjk2fQ.vh6TBwh1BPCL5UqT8dm5lFvAxOu9vgjfofblvrk3DZ4')",
       "Bash(curl -s \"http://localhost:8090/api/ingredients?page=0&size=20\")",
-      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\")"
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(xargs basename -a)"
     ]
   }
 }

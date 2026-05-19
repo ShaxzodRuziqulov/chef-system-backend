@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/units/**").permitAll()
 
                         // Qolgan barcha so'rovlar — faqat autentifikatsiya qilinganlar uchun
                         .anyRequest().authenticated()
