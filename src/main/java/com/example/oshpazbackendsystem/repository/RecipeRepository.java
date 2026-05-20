@@ -12,37 +12,64 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long>,
         JpaSpecificationExecutor<Recipe> {
 
-    // Hamma ochiq retseptlar — bosh sahifa uchun
-    Page<Recipe> findByDeletedFalseAndVisibleTrue(Pageable pageable);
+    // Bosh sahifa: public retseptlar + joriy foydalanuvchining shaxsiy retseptlari
+    // viewerId null bo'lsa (anonim) faqat visible=true qaytadi
+    @Query("""
+            SELECT r FROM Recipe r
+            WHERE r.deleted = false
+              AND (r.visible = true OR r.author.id = :viewerId)
+            """)
+    Page<Recipe> findVisibleOrOwned(@Param("viewerId") UUID viewerId, Pageable pageable);
 
     // Muallif bo'yicha retseptlar — "Mening retseptlarim"
     Page<Recipe> findByAuthorIdAndDeletedFalse(UUID authorId, Pageable pageable);
 
-    // Kategoriya bo'yicha retseptlar
-    Page<Recipe> findByCategoryIdAndDeletedFalseAndVisibleTrue(Long categoryId, Pageable pageable);
-
-    // Qiyinlik bo'yicha filtr
-    Page<Recipe> findByDifficultyLevelAndDeletedFalseAndVisibleTrue(
-            DifficultyLevel difficultyLevel, Pageable pageable);
-
-    // Ko'p tilli qidiruv — uz, ru, eng bir vaqtda
+    // Kategoriya bo'yicha: public + joriy foydalanuvchi shaxsiylari
     @Query("""
             SELECT r FROM Recipe r
             WHERE r.deleted = false
-              AND r.visible = true
+              AND r.category.id = :categoryId
+              AND (r.visible = true OR r.author.id = :viewerId)
+            """)
+    Page<Recipe> findByCategoryVisibleOrOwned(
+            @Param("categoryId") Long categoryId,
+            @Param("viewerId") UUID viewerId,
+            Pageable pageable);
+
+    // Qiyinlik bo'yicha: public + joriy foydalanuvchi shaxsiylari
+    @Query("""
+            SELECT r FROM Recipe r
+            WHERE r.deleted = false
+              AND r.difficultyLevel = :level
+              AND (r.visible = true OR r.author.id = :viewerId)
+            """)
+    Page<Recipe> findByDifficultyVisibleOrOwned(
+            @Param("level") DifficultyLevel level,
+            @Param("viewerId") UUID viewerId,
+            Pageable pageable);
+
+    // Ko'p tilli qidiruv — uz, ru, eng (public + joriy foydalanuvchi shaxsiylari)
+    @Query("""
+            SELECT r FROM Recipe r
+            WHERE r.deleted = false
+              AND (r.visible = true OR r.author.id = :viewerId)
               AND (
                 LOWER(r.titleUz)  LIKE LOWER(CONCAT('%', :keyword, '%')) OR
                 LOWER(r.titleRu)  LIKE LOWER(CONCAT('%', :keyword, '%')) OR
                 LOWER(r.titleEng) LIKE LOWER(CONCAT('%', :keyword, '%'))
               )
             """)
-    Page<Recipe> searchByTitle(@Param("keyword") String keyword, Pageable pageable);
+    Page<Recipe> searchByTitle(
+            @Param("keyword") String keyword,
+            @Param("viewerId") UUID viewerId,
+            Pageable pageable);
 
     // Retseptni ingredientlari bilan birga yuklash (N+1 muammosini oldini olish)
     @Query("""
@@ -69,4 +96,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
     @Modifying
     @Query("UPDATE Recipe r SET r.viewCount = r.viewCount + 1 WHERE r.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    // Sevimlilar: foydalanuvchi saqlagan retseptlar (sahifalangan)
+    @Query("""
+            SELECT r FROM Recipe r
+            WHERE r.deleted = false
+              AND r.id IN (
+                SELECT rf.id FROM User u JOIN u.favorites rf WHERE u.id = :userId
+              )
+            ORDER BY r.createdAt DESC
+            """)
+    Page<Recipe> findFavoritesByUserId(@Param("userId") UUID userId, Pageable pageable);
 }

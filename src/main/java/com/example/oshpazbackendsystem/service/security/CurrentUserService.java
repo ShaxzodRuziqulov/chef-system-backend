@@ -34,4 +34,16 @@ public class CurrentUserService {
     public UUID getCurrentUserId() {
         return getCurrentUser().getId();
     }
+
+    public UUID getCurrentUserIdOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        return userRepository.findWithRolesByUsername(authentication.getName())
+                .map(User::getId)
+                .orElse(null);
+    }
 }

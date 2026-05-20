@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -52,12 +53,14 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<AuthUserResponse>> authenticatedUser() {
         User currentUser = currentUserService.getCurrentUser();
         return ResponseEntity.ok(ApiResponse.ok(authService.toAuthUserResponse(currentUser)));
     }
 
     @PatchMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<AuthUserResponse>> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request) {
         User currentUser = currentUserService.getCurrentUser();
@@ -66,6 +69,7 @@ public class AuthController {
     }
 
     @PatchMapping("/password")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> changePassword(
             @Valid @RequestBody ChangePasswordRequest request) {
         User currentUser = currentUserService.getCurrentUser();
@@ -74,6 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> logout(
             @RequestBody RefreshTokenRequestDto dto,
             HttpServletRequest request,

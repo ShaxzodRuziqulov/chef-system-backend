@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class RecipeService {
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> findAll(Pageable pageable) {
-        return recipeRepository.findByDeletedFalseAndVisibleTrue(pageable)
+        return recipeRepository.findVisibleOrOwned(currentUserService.getCurrentUserIdOrNull(), pageable)
                 .map(this::toDto);
     }
 
@@ -45,6 +46,14 @@ public class RecipeService {
         // findByIdWithDetails: ingredients + tags → JOIN FETCH (bitta bag chekloviga rioya)
         Recipe recipe = recipeRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id));
+
+        // Private retsept faqat egasiga ko'rinadi
+        if (!recipe.isVisible()) {
+            UUID viewerId = currentUserService.getCurrentUserIdOrNull();
+            if (viewerId == null || !recipe.getAuthor().getId().equals(viewerId)) {
+                throw new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id);
+            }
+        }
 
         // steps va images ni transaksiya ichida alohida yuklaymiz (MultipleBagFetchException oldini olish)
         Hibernate.initialize(recipe.getSteps());
@@ -55,18 +64,21 @@ public class RecipeService {
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> search(String keyword, Pageable pageable) {
-        return recipeRepository.searchByTitle(keyword, pageable).map(this::toDto);
+        return recipeRepository.searchByTitle(keyword, currentUserService.getCurrentUserIdOrNull(), pageable)
+                .map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> findByCategory(Long categoryId, Pageable pageable) {
-        return recipeRepository.findByCategoryIdAndDeletedFalseAndVisibleTrue(categoryId, pageable)
+        return recipeRepository.findByCategoryVisibleOrOwned(
+                categoryId, currentUserService.getCurrentUserIdOrNull(), pageable)
                 .map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> findByDifficulty(DifficultyLevel level, Pageable pageable) {
-        return recipeRepository.findByDifficultyLevelAndDeletedFalseAndVisibleTrue(level, pageable)
+        return recipeRepository.findByDifficultyVisibleOrOwned(
+                level, currentUserService.getCurrentUserIdOrNull(), pageable)
                 .map(this::toDto);
     }
 

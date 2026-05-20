@@ -32,7 +32,9 @@
       "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\")",
       "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\\\\src\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
-      "Bash(xargs basename -a)"
+      "Bash(xargs basename -a)",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -l \"CorsConfiguration\\\\|corsConfigurationSource\\\\|CorsFilter\")"
     ]
   }
 }

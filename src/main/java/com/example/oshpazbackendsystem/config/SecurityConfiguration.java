@@ -46,8 +46,10 @@ public class SecurityConfiguration {
                         // Preflight (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Auth endpointlari — hamma uchun ochiq
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Auth endpointlari — faqat ochiq (register, login, refresh)
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
 
                         // Swagger UI — hamma uchun ochiq
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()

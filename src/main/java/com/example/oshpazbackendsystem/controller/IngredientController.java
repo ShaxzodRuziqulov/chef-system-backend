@@ -48,8 +48,8 @@ public class IngredientController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Ingredient yaratish — ADMIN")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Ingredient yaratish — autentifikatsiyadan o'tgan foydalanuvchi")
     public ResponseEntity<ApiResponse<IngredientDto>> create(@Valid @RequestBody IngredientRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.created(service.create(request)));

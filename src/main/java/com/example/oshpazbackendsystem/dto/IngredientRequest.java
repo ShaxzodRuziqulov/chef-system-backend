@@ -3,13 +3,11 @@ package com.example.oshpazbackendsystem.dto;
 import com.example.oshpazbackendsystem.entity.enums.MeasurementUnit;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class IngredientRequest {
 
     @NotBlank(message = "Ingredient nomi (UZ) bo'sh bo'lmasligi kerak")

@@ -29,9 +29,6 @@ public class FileUploadController {
     @Value("${app.upload.dir:uploads/images}")
     private String uploadDir;
 
-    @Value("${app.upload.base-url:http://localhost:8090}")
-    private String baseUrl;
-
     private static final long    MAX_SIZE      = 5 * 1024 * 1024L; // 5 MB
     private static final Set<String> ALLOWED   = Set.of(
             "image/jpeg", "image/png", "image/webp", "image/gif"
@@ -54,8 +51,8 @@ public class FileUploadController {
 
         log.info("Rasm saqlandi: {}/{}", uploadPath, fileName);
 
-        // ── URL qaytarish ────────────────────────────────────────
-        String url = baseUrl + "/uploads/images/" + fileName;
+        // ── URL qaytarish (nisbiy path — har qanday environment da ishlaydi) ──
+        String url = "/uploads/images/" + fileName;
         return ResponseEntity.ok(ApiResponse.ok(Map.of("url", url)));
     }
 

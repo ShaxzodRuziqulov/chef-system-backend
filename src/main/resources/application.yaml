@@ -4,7 +4,6 @@ server:
 app:
   upload:
     dir: uploads/images
-    base-url: http://localhost:8090
   cors:
     allowed-origins: http://localhost:5173,http://localhost:5174,http://localhost:5175
 
@@ -28,7 +27,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-  Jackson:
+  jackson:
     deserialization:
       fail-on-unknown-properties: false
 #    serialization:
@@ -41,8 +40,4 @@ security:
     expiration-time: 86400000
     refresh-expiration-time: 604800000
 
-logging:
-  level:
-    com.example.oshpazbackendsystem: DEBUG
-    org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
+

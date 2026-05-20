@@ -4,7 +4,6 @@ import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +12,6 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class RecipeUpdateRequest {
 
     @Size(max = 200)

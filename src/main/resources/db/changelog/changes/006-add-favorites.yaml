@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-add-favorites
+      author: system
+      changes:
+        - createTable:
+            tableName: user_favorites
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipe_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_favorites
+            columnNames: user_id, recipe_id
+            constraintName: pk_user_favorites
+
+        - addForeignKeyConstraint:
+            baseTableName: user_favorites
+            baseColumnNames: user_id
+            constraintName: fk_user_favorites_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: user_favorites
+            baseColumnNames: recipe_id
+            constraintName: fk_user_favorites_recipe
+            referencedTableName: recipes
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: user_favorites
+            indexName: idx_user_favorites_user_id
+            columns:
+              - column:
+                  name: user_id

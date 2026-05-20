@@ -20,13 +20,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        String absolutePath = Paths.get(uploadDir).toAbsolutePath().toString();
-        // OS ga bog'liq bo'lgan path separator ni to'g'rilash
-        if (!absolutePath.endsWith("/") && !absolutePath.endsWith("\\")) {
+        // Windows va Unix da ham ishlashi uchun URI formatida path
+        String absolutePath = Paths.get(uploadDir).toAbsolutePath()
+                .toUri().toString();
+        if (!absolutePath.endsWith("/")) {
             absolutePath += "/";
         }
 
         registry.addResourceHandler("/uploads/images/**")
-                .addResourceLocations("file:" + absolutePath);
+                .addResourceLocations(absolutePath);
     }
 }

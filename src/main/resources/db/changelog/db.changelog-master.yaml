@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/changes/004-add-entries-updated-at.yaml
   - include:
       file: db/changelog/changes/005-add-shopping-list-generated-at.yaml
+  - include:
+      file: db/changelog/changes/006-add-favorites.yaml
