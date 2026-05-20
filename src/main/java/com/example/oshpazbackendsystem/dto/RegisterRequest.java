@@ -19,7 +19,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Parol bo'sh bo'lmasligi kerak")
-    @Size(min = 8, message = "Parol kamida 8 belgi bo'lishi kerak")
+    @Size(min = 4, message = "Parol kamida 4 belgi bo'lishi kerak")
     private String password;
 
     @Size(max = 100)

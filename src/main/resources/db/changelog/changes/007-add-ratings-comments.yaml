@@ -1,0 +1,142 @@
+databaseChangeLog:
+
+  # ── Recipe ratings ──────────────────────────────────────────────────────────
+  - changeSet:
+      id: 007-create-recipe-ratings
+      author: system
+      changes:
+        - createTable:
+            tableName: recipe_ratings
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipe_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: score
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: recipe_ratings
+            columnNames: user_id, recipe_id
+            constraintName: uq_rating_user_recipe
+
+        - addForeignKeyConstraint:
+            baseTableName: recipe_ratings
+            baseColumnNames: user_id
+            constraintName: fk_rating_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: recipe_ratings
+            baseColumnNames: recipe_id
+            constraintName: fk_rating_recipe
+            referencedTableName: recipes
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: recipe_ratings
+            indexName: idx_rating_recipe_id
+            columns:
+              - column:
+                  name: recipe_id
+
+  # ── Recipe comments ─────────────────────────────────────────────────────────
+  - changeSet:
+      id: 007-create-recipe-comments
+      author: system
+      changes:
+        - createTable:
+            tableName: recipe_comments
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipe_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: recipe_comments
+            baseColumnNames: user_id
+            constraintName: fk_comment_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: recipe_comments
+            baseColumnNames: recipe_id
+            constraintName: fk_comment_recipe
+            referencedTableName: recipes
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: recipe_comments
+            indexName: idx_comment_recipe_id
+            columns:
+              - column:
+                  name: recipe_id

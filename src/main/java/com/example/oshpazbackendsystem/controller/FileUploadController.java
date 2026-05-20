@@ -51,8 +51,9 @@ public class FileUploadController {
 
         log.info("Rasm saqlandi: {}/{}", uploadPath, fileName);
 
-        // ── URL qaytarish (nisbiy path — har qanday environment da ishlaydi) ──
-        String url = "/uploads/images/" + fileName;
+        // ── URL qaytarish: WebMvcConfig /uploads/** → uploadDir papkasiga map qiladi ──
+        // uploadDir = "uploads/images" → URL = /uploads/xxx.jpg
+        String url = "/uploads/" + fileName;
         return ResponseEntity.ok(ApiResponse.ok(Map.of("url", url)));
     }
 

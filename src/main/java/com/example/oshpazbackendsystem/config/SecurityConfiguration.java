@@ -54,8 +54,9 @@ public class SecurityConfiguration {
                         // Swagger UI — hamma uchun ochiq
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
 
-                        // Yuklangan rasmlar — hamma uchun ochiq
+                        // Yuklangan rasmlar — hamma uchun ochiq (statik fayllar)
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/images/**").permitAll()
 
                         // Retseptlarni o'qish — hamma uchun ochiq (GET)
                         .requestMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()

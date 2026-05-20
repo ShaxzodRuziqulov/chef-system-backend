@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
  * /uploads/images/** → uploads/images/ papkasidagi fayllar
  */
 @Configuration
+@Slf4j
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Value("${app.upload.dir:uploads/images}")
@@ -20,14 +22,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        // Windows va Unix da ham ishlashi uchun URI formatida path
-        String absolutePath = Paths.get(uploadDir).toAbsolutePath()
-                .toUri().toString();
-        if (!absolutePath.endsWith("/")) {
-            absolutePath += "/";
-        }
+        // file: prefiks bilan absolute path — Windows va Unix da bir xil ishlaydi
+        String absolutePath = Paths.get(uploadDir).toAbsolutePath().normalize().toString()
+                .replace("\\", "/");
+        String location = "file:" + absolutePath + "/";
 
-        registry.addResourceHandler("/uploads/images/**")
-                .addResourceLocations(absolutePath);
+        log.info("Static upload resource location: {}", location);
+
+        // /uploads/** → uploads/images/ papkasi
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(location)
+                .setCacheControl(
+                    org.springframework.http.CacheControl.maxAge(7, java.util.concurrent.TimeUnit.DAYS)
+                );
     }
 }
