@@ -1,0 +1,68 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 008-deduplicate-ingredients
+      author: admin
+      comment: "Bir xil nameUz bo'lgan dublikat ingredientlarni tozalash va UNIQUE constraint qo'shish"
+      changes:
+
+        # 1. recipe_ingredients: dublikat ingredient_id larni minimal id ga ko'chirish
+        - sql:
+            sql: |
+              UPDATE recipe_ingredients ri
+              SET ingredient_id = (
+                  SELECT MIN(i2.id)
+                  FROM ingredients i2
+                  WHERE LOWER(i2.name_uz) = LOWER((SELECT i1.name_uz FROM ingredients i1 WHERE i1.id = ri.ingredient_id))
+              )
+              WHERE ri.ingredient_id IN (
+                  SELECT id FROM ingredients
+                  WHERE LOWER(name_uz) IN (
+                      SELECT LOWER(name_uz) FROM ingredients
+                      GROUP BY LOWER(name_uz)
+                      HAVING COUNT(*) > 1
+                  )
+                  AND id NOT IN (
+                      SELECT MIN(id) FROM ingredients GROUP BY LOWER(name_uz)
+                  )
+              );
+
+        # 2. shopping_list_items: dublikat ingredient_id larni minimal id ga ko'chirish
+        - sql:
+            sql: |
+              UPDATE shopping_list_items sli
+              SET ingredient_id = (
+                  SELECT MIN(i2.id)
+                  FROM ingredients i2
+                  WHERE LOWER(i2.name_uz) = LOWER((SELECT i1.name_uz FROM ingredients i1 WHERE i1.id = sli.ingredient_id))
+              )
+              WHERE sli.ingredient_id IN (
+                  SELECT id FROM ingredients
+                  WHERE LOWER(name_uz) IN (
+                      SELECT LOWER(name_uz) FROM ingredients
+                      GROUP BY LOWER(name_uz)
+                      HAVING COUNT(*) > 1
+                  )
+                  AND id NOT IN (
+                      SELECT MIN(id) FROM ingredients GROUP BY LOWER(name_uz)
+                  )
+              );
+
+        # 3. Dublikat ingredientlarni o'chirish (faqat minimal id ni qoldiramiz)
+        - sql:
+            sql: |
+              DELETE FROM ingredients
+              WHERE LOWER(name_uz) IN (
+                  SELECT LOWER(name_uz) FROM ingredients
+                  GROUP BY LOWER(name_uz)
+                  HAVING COUNT(*) > 1
+              )
+              AND id NOT IN (
+                  SELECT MIN(id) FROM ingredients GROUP BY LOWER(name_uz)
+              );
+
+        # 4. UNIQUE constraint qo'shish — endi xavfsiz
+        - addUniqueConstraint:
+            tableName: ingredients
+            columnNames: name_uz
+            constraintName: uq_ingredients_name_uz

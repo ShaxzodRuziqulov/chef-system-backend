@@ -80,14 +80,14 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
             """)
     Optional<Recipe> findByIdWithIngredients(@Param("id") Long id);
 
-    // Retseptni ingredientlari + teglari bilan yuklash
-    // DIQQAT: Hibernate bir so'rovda faqat BITTA List (bag) ni JOIN FETCH qila oladi.
-    // steps va images ni RecipeService ichida Hibernate.initialize() bilan yuklaymiz.
+    // Retseptni faqat ingredientlari bilan yuklash.
+    // DIQQAT: ingredients (List/bag) va tags ni BITTA so'rovda JOIN FETCH qilsak
+    // Cartesian product hosil bo'ladi → har bir ingredient teglar soni marta ko'payadi.
+    // Shuning uchun tags ni RecipeService ichida Hibernate.initialize() bilan yuklaymiz.
     @Query("""
             SELECT DISTINCT r FROM Recipe r
             LEFT JOIN FETCH r.ingredients ri
             LEFT JOIN FETCH ri.ingredient
-            LEFT JOIN FETCH r.tags
             WHERE r.id = :id AND r.deleted = false
             """)
     Optional<Recipe> findByIdWithDetails(@Param("id") Long id);

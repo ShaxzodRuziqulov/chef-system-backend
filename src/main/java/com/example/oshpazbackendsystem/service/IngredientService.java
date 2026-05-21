@@ -36,17 +36,32 @@ public class IngredientService {
     }
 
     public IngredientDto create(IngredientRequest request) {
-        Ingredient ingredient = Ingredient.builder()
-                .nameUz(request.getNameUz())
-                .nameRu(request.getNameRu())
-                .nameEng(request.getNameEng())
-                .description(request.getDescription())
-                .imageUrl(request.getImageUrl())
-                .defaultUnit(request.getDefaultUnit())
-                .caloriesPer100g(request.getCaloriesPer100g())
-                .allergen(request.isAllergen())
-                .build();
-        return mapper.toDto(repository.save(ingredient));
+        String nameUz = request.getNameUz().trim();
+
+        // Bir xil nomli ingredient mavjud bo'lsa — qayta yaratmasdan mavjudini qaytaramiz
+        return repository.findByNameUzIgnoreCase(nameUz)
+                .map(existing -> {
+                    // Agar yangi ma'lumotlar berilgan bo'lsa — mavjudini yangilaymiz
+                    boolean changed = false;
+                    if (request.getNameRu()  != null && !request.getNameRu().isBlank()  && existing.getNameRu()  == null) { existing.setNameRu(request.getNameRu());   changed = true; }
+                    if (request.getNameEng() != null && !request.getNameEng().isBlank() && existing.getNameEng() == null) { existing.setNameEng(request.getNameEng()); changed = true; }
+                    if (request.getImageUrl()!= null && !request.getImageUrl().isBlank()&& existing.getImageUrl()== null) { existing.setImageUrl(request.getImageUrl());changed = true; }
+                    if (changed) repository.save(existing);
+                    return mapper.toDto(existing);
+                })
+                .orElseGet(() -> {
+                    Ingredient ingredient = Ingredient.builder()
+                            .nameUz(nameUz)
+                            .nameRu(request.getNameRu())
+                            .nameEng(request.getNameEng())
+                            .description(request.getDescription())
+                            .imageUrl(request.getImageUrl())
+                            .defaultUnit(request.getDefaultUnit())
+                            .caloriesPer100g(request.getCaloriesPer100g())
+                            .allergen(request.isAllergen())
+                            .build();
+                    return mapper.toDto(repository.save(ingredient));
+                });
     }
 
     public IngredientDto update(Long id, IngredientRequest request) {

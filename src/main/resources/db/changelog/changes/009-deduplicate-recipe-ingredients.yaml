@@ -1,0 +1,23 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 009-deduplicate-recipe-ingredients
+      author: admin
+      comment: "recipe_ingredients jadvalidagi dublikat (recipe_id + ingredient_id) qatorlarni o'chirish va UNIQUE constraint qo'shish"
+      changes:
+
+        # 1. Har bir (recipe_id, ingredient_id) juftligi uchun faqat MIN(id) ni qoldiramiz
+        - sql:
+            sql: |
+              DELETE FROM recipe_ingredients
+              WHERE id NOT IN (
+                  SELECT MIN(id)
+                  FROM recipe_ingredients
+                  GROUP BY recipe_id, ingredient_id
+              );
+
+        # 2. Kelajakda dublikat qo'shilmasligi uchun UNIQUE constraint
+        - addUniqueConstraint:
+            tableName: recipe_ingredients
+            columnNames: recipe_id, ingredient_id
+            constraintName: uq_recipe_ingredients_recipe_ingredient

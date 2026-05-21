@@ -53,7 +53,10 @@
       "Bash(curl -s -o /dev/null -w \"Backend:  %{http_code}\\\\n\" \"https://oshpaz-backend-845310076735.us-central1.run.app/api/categories?page=0&size=1\")",
       "Bash(gsutil ls *)",
       "Bash(gsutil mb *)",
-      "Bash(gcloud logging *)"
+      "Bash(gcloud logging *)",
+      "Bash(cmd.exe /c \"dir D:\\\\12\")",
+      "Bash(gcloud run *)",
+      "Bash(wait)"
     ]
   }
 }

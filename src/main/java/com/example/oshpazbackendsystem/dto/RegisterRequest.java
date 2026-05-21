@@ -1,6 +1,5 @@
 package com.example.oshpazbackendsystem.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -14,8 +13,7 @@ public class RegisterRequest {
     @Size(min = 3, max = 50, message = "Username 3-50 belgi orasida bo'lishi kerak")
     private String username;
 
-    @NotBlank(message = "Email bo'sh bo'lmasligi kerak")
-    @Email(message = "Email formati noto'g'ri")
+    // Email ixtiyoriy — ko'rsatilmasa username@oshpaz.local shaklida avtomatik yaratiladi
     private String email;
 
     @NotBlank(message = "Parol bo'sh bo'lmasligi kerak")

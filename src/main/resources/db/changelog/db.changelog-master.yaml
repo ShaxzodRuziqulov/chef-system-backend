@@ -13,3 +13,7 @@ databaseChangeLog:
       file: db/changelog/changes/006-add-favorites.yaml
   - include:
       file: db/changelog/changes/007-add-ratings-comments.yaml
+  - include:
+      file: db/changelog/changes/008-deduplicate-ingredients.yaml
+  - include:
+      file: db/changelog/changes/009-deduplicate-recipe-ingredients.yaml

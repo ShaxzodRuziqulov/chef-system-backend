@@ -8,6 +8,7 @@ import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.repository.*;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class RecipeService {
     private final TagRepository tagRepository;
     private final IngredientRepository ingredientRepository;
     private final CurrentUserService currentUserService;
+    private final EntityManager entityManager;
 
     // ── O'qish ───────────────────────────────────────────────────────────────
 
@@ -55,7 +57,10 @@ public class RecipeService {
             }
         }
 
-        // steps va images ni transaksiya ichida alohida yuklaymiz (MultipleBagFetchException oldini olish)
+        // tags, steps, images ni transaksiya ichida alohida yuklaymiz.
+        // Sabab: ingredients (List/bag) bilan tags ni bitta JOIN FETCH da olsak
+        // Cartesian product hosil bo'lib, ingredientlar teglar soni marta ko'payadi.
+        Hibernate.initialize(recipe.getTags());
         Hibernate.initialize(recipe.getSteps());
         Hibernate.initialize(recipe.getImages());
 
@@ -207,7 +212,11 @@ public class RecipeService {
         }
 
         if (request.getIngredients() != null) {
+            // Avval eski qatorlarni o'chiramiz va flush qilamiz —
+            // shunda Hibernate yangi qatorlarni qo'shishdan oldin DELETE ni bajaradi.
+            // (flush bo'lmasa "uq_recipe_ingredients_recipe_ingredient" constraint xatosi chiqishi mumkin)
             recipe.getIngredients().clear();
+            entityManager.flush();
             for (var req : request.getIngredients()) {
                 Ingredient ingredient = ingredientRepository.findById(req.getIngredientId())
                         .orElseThrow(() -> new NotFoundException(

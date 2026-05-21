@@ -33,8 +33,13 @@ public class AuthService {
     private final UserMapper userMapper;
 
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ConflictException("EMAIL_EXISTS", "Bu email allaqachon ro'yxatdan o'tgan: " + request.getEmail());
+        // Email berilmagan bo'lsa — username asosida avtomatik generatsiya
+        String email = (request.getEmail() != null && !request.getEmail().isBlank())
+                ? request.getEmail().trim().toLowerCase()
+                : request.getUsername().toLowerCase() + "@oshpaz.local";
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException("EMAIL_EXISTS", "Bu email allaqachon ro'yxatdan o'tgan");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new ConflictException("USERNAME_EXISTS", "Bu username band: " + request.getUsername());
@@ -42,7 +47,7 @@ public class AuthService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                .email(request.getEmail())
+                .email(email)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .role(Role.USER)
