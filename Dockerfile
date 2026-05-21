@@ -13,6 +13,6 @@ COPY --from=builder /app/target/*.jar app.jar
 
 RUN mkdir -p uploads/images
 
-EXPOSE 8090
+EXPOSE 7991
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
