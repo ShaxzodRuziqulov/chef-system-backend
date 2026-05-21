@@ -34,7 +34,26 @@
       "Bash(Select-Object FullName)",
       "Bash(xargs basename -a)",
       "Bash(xargs cat)",
-      "Bash(xargs grep -l \"CorsConfiguration\\\\|corsConfigurationSource\\\\|CorsFilter\")"
+      "Bash(xargs grep -l \"CorsConfiguration\\\\|corsConfigurationSource\\\\|CorsFilter\")",
+      "Bash(python3 -c ' *)",
+      "Bash(docker context *)",
+      "Bash(docker info *)",
+      "Bash(gcloud builds *)",
+      "Bash(gcloud config *)",
+      "Bash(docker build *)",
+      "Bash(]*\" SavedPage-*.js 2>&1 | head -5)",
+      "Bash(grep -o \"saved.count[^`]*\" SavedPage-*.js 2>&1 | head -5)",
+      "Bash(docker push *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://oshpaz-frontend-845310076735.us-central1.run.app/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://oshpaz-backend-845310076735.us-central1.run.app/actuator/health)",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" https://oshpaz-backend-845310076735.us-central1.run.app/api/categories?page=0)",
+      "Bash(size=1 2>&1)",
+      "Bash(./mvnw clean *)",
+      "Bash(curl -s -o /dev/null -w \"Frontend: %{http_code}\\\\n\" https://oshpaz-frontend-845310076735.us-central1.run.app/)",
+      "Bash(curl -s -o /dev/null -w \"Backend:  %{http_code}\\\\n\" \"https://oshpaz-backend-845310076735.us-central1.run.app/api/categories?page=0&size=1\")",
+      "Bash(gsutil ls *)",
+      "Bash(gsutil mb *)",
+      "Bash(gcloud logging *)"
     ]
   }
 }

@@ -1,6 +1,8 @@
 package com.example.oshpazbackendsystem.repository;
 
 import com.example.oshpazbackendsystem.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,6 +34,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Role — single enum field, no JOIN needed; named explicitly for clarity
     @Query("SELECT u FROM User u WHERE u.username = :username")
     Optional<User> findWithRolesByUsername(@Param("username") String username);
+
+    // ── Admin: barcha foydalanuvchilar (qidiruv bilan) ───────────────────────
+
+    @Query("""
+            SELECT u FROM User u
+            WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))
+               OR LOWER(u.email)    LIKE LOWER(CONCAT('%', :q, '%'))
+               OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :q, '%'))
+            """)
+    Page<User> searchByKeyword(@Param("q") String q, Pageable pageable);
+
+    long countByActiveTrue();
 
     // ── Sevimlilar ───────────────────────────────────────────────────────────
 

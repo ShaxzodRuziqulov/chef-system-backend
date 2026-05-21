@@ -1,11 +1,17 @@
 package com.example.oshpazbackendsystem.service;
 
+import com.example.oshpazbackendsystem.dto.AdminUserUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.UserDto;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +20,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository repository;
-    private final UserMapper mapper;
+    private final UserRepository    repository;
+    private final UserMapper        mapper;
+    private final PasswordEncoder   passwordEncoder;
 
     public UserDto create(UserDto response) {
         User user = mapper.toEntity(response);
@@ -32,6 +39,38 @@ public class UserService {
     public List<UserDto> findAll() {
         List<User> users = repository.findAll();
         return mapper.toDto(users);
+    }
+
+    /** Admin: sahifalangan ro'yxat, ixtiyoriy qidiruv */
+    public Page<UserDto> findAll(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<User> users = (search != null && !search.isBlank())
+                ? repository.searchByKeyword(search.trim(), pageable)
+                : repository.findAll(pageable);
+        return users.map(mapper::toDto);
+    }
+
+    /** Faol foydalanuvchilar soni */
+    public long countActive() {
+        return repository.countByActiveTrue();
+    }
+
+    /** Admin tomonidan foydalanuvchi parolini yangilash (joriy parolsiz) */
+    public void resetPasswordByAdmin(UUID id, String newPassword) {
+        User user = findByUserId(id);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        repository.save(user);
+    }
+
+    /** Admin tomonidan foydalanuvchi ma'lumotlarini yangilash */
+    public UserDto updateByAdmin(UUID id, AdminUserUpdateRequest req) {
+        User user = findByUserId(id);
+        if (req.getFullName() != null)  user.setFullName(req.getFullName());
+        if (req.getUsername() != null)  user.setUsername(req.getUsername());
+        if (req.getEmail()    != null)  user.setEmail(req.getEmail());
+        if (req.getRole()     != null)  user.setRole(req.getRole());
+        if (req.getActive()   != null)  user.setActive(req.getActive());
+        return mapper.toDto(repository.save(user));
     }
 
     public UserDto findById(UUID id) {
