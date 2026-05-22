@@ -25,9 +25,6 @@ replay_pid*
 application-local.yaml
 application-local.yml
 application-local.properties
-application-prod.yaml
-application-prod.yml
-application-prod.properties
 *.env
 .env
 .env.*

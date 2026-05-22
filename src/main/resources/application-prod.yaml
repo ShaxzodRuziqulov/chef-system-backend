@@ -1,0 +1,32 @@
+server:
+  port: ${PORT:8080}
+
+app:
+  upload:
+    dir: uploads/images
+  gcs:
+    enabled: true
+    bucket-name: oshpaz-uploads
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:*}
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 6MB
+  datasource:
+    url: jdbc:postgresql:///${DB_NAME:chef}?cloudSqlInstance=${CLOUD_SQL_INSTANCE}&socketFactory=com.google.cloud.sql.postgres.SocketFactory
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+security:
+  jwt:
+    secret-key: ${SECRET_KEY}
+    expiration-time: 86400000
+    refresh-expiration-time: 604800000
