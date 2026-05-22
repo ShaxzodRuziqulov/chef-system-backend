@@ -53,6 +53,7 @@ jobs:
             --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.SERVICE }}:${{ github.sha }} \
             --region=${{ env.REGION }} \
             --platform=managed \
+            --min-instances=1 \
             --add-cloudsql-instances=${{ env.CLOUD_SQL_INSTANCE }} \
             --set-env-vars="SPRING_PROFILES_ACTIVE=prod,CLOUD_SQL_INSTANCE=${{ env.CLOUD_SQL_INSTANCE }},DB_NAME=chef,DB_USER=postgres,DB_PASS=${{ secrets.DB_PASS }},SECRET_KEY=${{ secrets.SECRET_KEY }},ALLOWED_ORIGINS=https://oshpaz-frontend-845310076735.us-central1.run.app" \
             --quiet
