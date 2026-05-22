@@ -54,11 +54,5 @@ jobs:
             --region=${{ env.REGION }} \
             --platform=managed \
             --add-cloudsql-instances=${{ env.CLOUD_SQL_INSTANCE }} \
-            --set-env-vars="SPRING_PROFILES_ACTIVE=prod" \
-            --set-env-vars="CLOUD_SQL_INSTANCE=${{ env.CLOUD_SQL_INSTANCE }}" \
-            --set-env-vars="DB_NAME=chef" \
-            --set-env-vars="DB_USER=postgres" \
-            --set-env-vars="DB_PASS=${{ secrets.DB_PASS }}" \
-            --set-env-vars="SECRET_KEY=${{ secrets.SECRET_KEY }}" \
-            --set-env-vars="ALLOWED_ORIGINS=https://oshpaz-frontend-845310076735.us-central1.run.app" \
+            --set-env-vars="SPRING_PROFILES_ACTIVE=prod,CLOUD_SQL_INSTANCE=${{ env.CLOUD_SQL_INSTANCE }},DB_NAME=chef,DB_USER=postgres,DB_PASS=${{ secrets.DB_PASS }},SECRET_KEY=${{ secrets.SECRET_KEY }},ALLOWED_ORIGINS=https://oshpaz-frontend-845310076735.us-central1.run.app" \
             --quiet
