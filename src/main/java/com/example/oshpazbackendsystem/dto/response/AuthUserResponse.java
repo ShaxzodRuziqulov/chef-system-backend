@@ -5,14 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 public class AuthUserResponse {
     private UUID id;
+    private String username;
+    private String email;
     private String fullName;
     private Role roles;
     @JsonProperty("avatar_url")
     private String avatarUrl;
+    private LocalDateTime createdAt;
 }

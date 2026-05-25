@@ -125,9 +125,12 @@ public class AuthService {
     public AuthUserResponse toAuthUserResponse(User user) {
         AuthUserResponse response = new AuthUserResponse();
         response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
         response.setFullName(user.getFullName());
         response.setAvatarUrl(user.getAvatarUrl());
         response.setRoles(user.getRole());
+        response.setCreatedAt(user.getCreatedAt());
         return response;
     }
 }
