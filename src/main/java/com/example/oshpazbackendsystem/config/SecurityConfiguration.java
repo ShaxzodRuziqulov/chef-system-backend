@@ -30,6 +30,8 @@ public class SecurityConfiguration {
 
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:5174,http://localhost:5175,https://photobookvue-production.up.railway.app}")
     private String allowedOrigins;
@@ -65,9 +67,20 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/units/**").permitAll()
 
+                        // Ko'rishlar soni — hamma uchun ochiq (login talab qilinmaydi)
+                        .requestMatchers(HttpMethod.POST, "/api/recipes/*/view").permitAll()
+
+                        // Platforma ma'lumotlari — hamma uchun ochiq
+                        .requestMatchers(HttpMethod.GET, "/api/stats").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/features").permitAll()
+
                         // Qolgan barcha so'rovlar — faqat autentifikatsiya qilinganlar uchun
                         .anyRequest().authenticated()
 
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

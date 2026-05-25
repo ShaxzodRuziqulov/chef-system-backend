@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -96,6 +97,11 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
     @Modifying
     @Query("UPDATE Recipe r SET r.viewCount = r.viewCount + 1 WHERE r.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    // Statistika uchun
+    long countByVisibleTrueAndDeletedFalse();
+
+    List<Recipe> findTop5ByVisibleTrueAndDeletedFalseOrderByViewCountDesc();
 
     // Sevimlilar: foydalanuvchi saqlagan retseptlar (sahifalangan)
     @Query("""

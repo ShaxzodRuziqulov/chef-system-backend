@@ -22,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -75,6 +77,25 @@ public class AuthController {
         User currentUser = currentUserService.getCurrentUser();
         authService.changePassword(currentUser, request);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody Map<String, String> body) {
+        authService.forgotPassword(body.getOrDefault("usernameOrEmail", ""));
+        return ResponseEntity.ok(ApiResponse.ok(
+                "Agar bu username/email tizimda ro'yxatga olingan bo'lsa, tiklash havolasi yuboriladi"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String token = body.getOrDefault("token", "");
+        String newPassword = body.getOrDefault("newPassword", "");
+        if (newPassword.length() < 6) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"));
+        }
+        authService.resetPassword(token, newPassword);
+        return ResponseEntity.ok(ApiResponse.ok("Parol muvaffaqiyatli yangilandi"));
     }
 
     @PostMapping("/logout")

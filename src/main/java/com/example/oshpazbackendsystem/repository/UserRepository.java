@@ -47,6 +47,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     long countByActiveTrue();
 
+    // ── Parolni tiklash ──────────────────────────────────────────────────────
+
+    Optional<User> findByUsernameOrEmail(String username, String email);
+
+    Optional<User> findByResetToken(String resetToken);
+
     // ── Sevimlilar ───────────────────────────────────────────────────────────
 
     @Query(value = "SELECT recipe_id FROM user_favorites WHERE user_id = :userId", nativeQuery = true)

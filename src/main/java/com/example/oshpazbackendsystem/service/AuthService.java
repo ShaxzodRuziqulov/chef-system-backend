@@ -6,6 +6,7 @@ import com.example.oshpazbackendsystem.dto.RegisterRequest;
 import com.example.oshpazbackendsystem.dto.UpdateProfileRequest;
 import com.example.oshpazbackendsystem.dto.response.AuthResponse;
 import com.example.oshpazbackendsystem.exeption.ConflictException;
+import com.example.oshpazbackendsystem.exeption.BadRequestException;
 import com.example.oshpazbackendsystem.dto.response.AuthTokenResponse;
 import com.example.oshpazbackendsystem.dto.response.AuthUserResponse;
 import com.example.oshpazbackendsystem.dto.response.RefreshTokenRequestDto;
@@ -15,6 +16,7 @@ import com.example.oshpazbackendsystem.entity.enums.Role;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -119,6 +125,42 @@ public class AuthService {
             throw new BadCredentialsException("Joriy parol noto'g'ri");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    /**
+     * Parolni tiklash so'rovi — token generatsiya qilib saqlaydi.
+     * Haqiqiy loyihada email yuboriladi; hozircha token logga chiqariladi.
+     */
+    public void forgotPassword(String usernameOrEmail) {
+        // Foydalanuvchi topilmasa ham xato qaytarmaymiz (xavfsizlik)
+        userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .ifPresent(user -> {
+                    String token = UUID.randomUUID().toString();
+                    user.setResetToken(token);
+                    user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+                    userRepository.save(user);
+                    // TODO: emailService.sendResetLink(user.getEmail(), token);
+                    log.info("[PASSWORD RESET] User: {} | Token: {} | Expiry: 1 hour",
+                            user.getUsername(), token);
+                });
+    }
+
+    /**
+     * Token va yangi parol bilan parolni tiklash.
+     */
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElseThrow(() -> new BadRequestException("INVALID_TOKEN", "Token noto'g'ri yoki muddati o'tgan"));
+
+        if (user.getResetTokenExpiry() == null ||
+                user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("TOKEN_EXPIRED", "Token muddati tugagan. Qaytadan so'rang");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
         userRepository.save(user);
     }
 

@@ -68,6 +68,13 @@ public class User extends BaseEntity implements UserDetails {
     @Builder.Default
     private boolean active = true;
 
+    /** Parolni tiklash uchun UUID token (email orqali yuboriladi) */
+    @Column(length = 100)
+    private String resetToken;
+
+    /** Token amal qilish muddati */
+    private java.time.LocalDateTime resetTokenExpiry;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Recipe> recipes = new ArrayList<>();
