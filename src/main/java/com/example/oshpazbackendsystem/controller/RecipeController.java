@@ -74,31 +74,31 @@ public class RecipeController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Yangi retsept yaratish")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Yangi retsept yaratish — faqat BLOGGER va ADMIN")
     public ResponseEntity<ApiResponse<RecipeDto>> create(@Valid @RequestBody RecipeCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(service.create(request)));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni yangilash (to'liq)")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Retseptni yangilash (to'liq) — faqat BLOGGER va ADMIN")
     public ResponseEntity<ApiResponse<RecipeDto>> update(@PathVariable Long id,
                                              @Valid @RequestBody RecipeUpdateRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni yangilash (qisman)")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Retseptni yangilash (qisman) — faqat BLOGGER va ADMIN")
     public ResponseEntity<ApiResponse<RecipeDto>> patch(@PathVariable Long id,
                                             @Valid @RequestBody RecipeUpdateRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Retseptni o'chirish")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Retseptni o'chirish — faqat BLOGGER va ADMIN")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

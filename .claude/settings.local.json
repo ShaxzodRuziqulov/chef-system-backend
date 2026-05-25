@@ -56,7 +56,16 @@
       "Bash(gcloud logging *)",
       "Bash(cmd.exe /c \"dir D:\\\\12\")",
       "Bash(gcloud run *)",
-      "Bash(wait)"
+      "Bash(wait)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\\\\src\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName)",
+      "Bash(ls /mnt/d/ 2>&1 || ls /d/ 2>&1 || echo \"Cannot access D drive from bash\")",
+      "Bash(npx vue-tsc *)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(git rm *)",
+      "PowerShell(gcloud config get-value project 2>$null)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "WebFetch(domain:oshpaz-frontend-845310076735.us-central1.run.app)"
     ]
   }
 }

@@ -3,6 +3,8 @@ package com.example.oshpazbackendsystem.service;
 import com.example.oshpazbackendsystem.dto.AdminUserUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.UserDto;
 import com.example.oshpazbackendsystem.entity.User;
+import com.example.oshpazbackendsystem.entity.enums.Role;
+import com.example.oshpazbackendsystem.exeption.BadRequestException;
 import com.example.oshpazbackendsystem.exeption.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
 import com.example.oshpazbackendsystem.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +26,7 @@ public class UserService {
     private final UserRepository    repository;
     private final UserMapper        mapper;
     private final PasswordEncoder   passwordEncoder;
+    private final com.example.oshpazbackendsystem.service.security.CurrentUserService currentUserService;
 
     public UserDto create(UserDto response) {
         User user = mapper.toEntity(response);
@@ -92,5 +96,18 @@ public class UserService {
     public User findByUserId(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "Foydalanuvchi topilmadi: " + id));
+    }
+
+    @Transactional
+    public UserDto becomeBlogger(Boolean termsAccepted) {
+        if (!Boolean.TRUE.equals(termsAccepted)) {
+            throw new BadRequestException("TERMS_NOT_ACCEPTED", "Foydalanish shartlarini qabul qilishingiz kerak");
+        }
+        User user = currentUserService.getCurrentUser();
+        if (user.getRole() != Role.USER) {
+            throw new BadRequestException("ALREADY_UPGRADED", "Siz allaqachon " + user.getRole() + " rolidasiz");
+        }
+        user.setRole(Role.BLOGGER);
+        return mapper.toDto(repository.save(user));
     }
 }

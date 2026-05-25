@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import java.util.UUID;
 
 @RestController
@@ -72,5 +74,14 @@ public class UserController {
     @Operation(summary = "Foydalanuvchini faollashtirish — ADMIN")
     public ResponseEntity<ApiResponse<UserDto>> activate(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.ok(service.activateById(id)));
+    }
+
+    @PostMapping("/become-blogger")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Foydalanish shartlarini qabul qilib, BLOGGER bo'lish")
+    public ResponseEntity<ApiResponse<UserDto>> becomeBlogger(
+            @RequestBody Map<String, Boolean> body) {
+        Boolean accepted = body.get("termsAccepted");
+        return ResponseEntity.ok(ApiResponse.ok(service.becomeBlogger(accepted)));
     }
 }
