@@ -29,6 +29,9 @@ public class GcsStorageService {
     @Value("${app.upload.dir:uploads/images}")
     private String localUploadDir;
 
+    @Value("${app.upload.video-dir:uploads/videos}")
+    private String localVideoDir;
+
     private final Storage storage;
 
     public GcsStorageService() {
@@ -74,6 +77,32 @@ public class GcsStorageService {
         );
         log.info("Lokal saqlandi: {}/{}", uploadPath, fileName);
         return "/uploads/" + fileName;
+    }
+
+    public String uploadVideo(MultipartFile file) throws IOException {
+        String ext      = getExtension(file);
+        String fileName = UUID.randomUUID().toString().replace("-", "") + ext;
+
+        if (gcsEnabled) {
+            BlobId   blobId   = BlobId.of(bucketName, "videos/" + fileName);
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                    .setContentType(file.getContentType())
+                    .build();
+            storage.create(blobInfo, file.getBytes());
+            String url = "https://storage.googleapis.com/" + bucketName + "/videos/" + fileName;
+            log.info("GCS ga video yuklandi: {}", url);
+            return url;
+        } else {
+            java.nio.file.Path uploadPath = java.nio.file.Paths.get(localVideoDir).toAbsolutePath();
+            java.nio.file.Files.createDirectories(uploadPath);
+            java.nio.file.Files.copy(
+                    file.getInputStream(),
+                    uploadPath.resolve(fileName),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+            log.info("Lokal video saqlandi: {}/{}", uploadPath, fileName);
+            return "/uploads/videos/" + fileName;
+        }
     }
 
     private String getExtension(MultipartFile file) {

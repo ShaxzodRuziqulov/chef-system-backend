@@ -20,6 +20,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${app.upload.dir:uploads/images}")
     private String uploadDir;
 
+    @Value("${app.upload.video-dir:uploads/videos}")
+    private String videoUploadDir;
+
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         // file: prefiks bilan absolute path — Windows va Unix da bir xil ishlaydi
@@ -32,6 +35,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // /uploads/** → uploads/images/ papkasi
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(location)
+                .setCacheControl(
+                    org.springframework.http.CacheControl.maxAge(7, java.util.concurrent.TimeUnit.DAYS)
+                );
+
+        // /uploads/videos/** → uploads/videos/ papkasi
+        String videoAbsPath = Paths.get(videoUploadDir).toAbsolutePath().normalize().toString()
+                .replace("\\", "/");
+        String videoLocation = "file:" + videoAbsPath + "/";
+        log.info("Static video resource location: {}", videoLocation);
+        registry.addResourceHandler("/uploads/videos/**")
+                .addResourceLocations(videoLocation)
                 .setCacheControl(
                     org.springframework.http.CacheControl.maxAge(7, java.util.concurrent.TimeUnit.DAYS)
                 );

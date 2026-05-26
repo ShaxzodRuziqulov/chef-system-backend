@@ -4,6 +4,7 @@ server:
 app:
   upload:
     dir: uploads/images
+    video-dir: uploads/videos
   cors:
     allowed-origins: http://localhost:5173,http://localhost:5174,http://localhost:5175
 
@@ -13,8 +14,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5MB
-      max-request-size: 6MB
+      max-file-size: 200MB
+      max-request-size: 205MB
   datasource:
     url: jdbc:postgresql://localhost:5432/chef
     username: postgres
