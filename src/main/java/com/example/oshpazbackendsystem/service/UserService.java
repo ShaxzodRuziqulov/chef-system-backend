@@ -110,4 +110,14 @@ public class UserService {
         user.setRole(Role.BLOGGER);
         return mapper.toDto(repository.save(user));
     }
+
+    @Transactional
+    public UserDto leaveBlogger() {
+        User user = currentUserService.getCurrentUser();
+        if (user.getRole() != Role.BLOGGER) {
+            throw new BadRequestException("NOT_BLOGGER", "Siz oshpaz rolidа emassiz");
+        }
+        user.setRole(Role.USER);
+        return mapper.toDto(repository.save(user));
+    }
 }

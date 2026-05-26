@@ -84,4 +84,11 @@ public class UserController {
         Boolean accepted = body.get("termsAccepted");
         return ResponseEntity.ok(ApiResponse.ok(service.becomeBlogger(accepted)));
     }
+
+    @PostMapping("/leave-blogger")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Oshpaz statusidan chiqib USER ga qaytish")
+    public ResponseEntity<ApiResponse<UserDto>> leaveBlogger() {
+        return ResponseEntity.ok(ApiResponse.ok(service.leaveBlogger()));
+    }
 }
