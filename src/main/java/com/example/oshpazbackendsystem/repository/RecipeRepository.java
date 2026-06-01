@@ -5,7 +5,6 @@ import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,12 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface RecipeRepository extends JpaRepository<Recipe, Long>,
-        JpaSpecificationExecutor<Recipe> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     // Bosh sahifa: public retseptlar + joriy foydalanuvchining shaxsiy retseptlari
     // viewerId null bo'lsa (anonim) faqat visible=true qaytadi
@@ -71,15 +68,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
             @Param("keyword") String keyword,
             @Param("viewerId") UUID viewerId,
             Pageable pageable);
-
-    // Retseptni ingredientlari bilan birga yuklash (N+1 muammosini oldini olish)
-    @Query("""
-            SELECT DISTINCT r FROM Recipe r
-            LEFT JOIN FETCH r.ingredients ri
-            LEFT JOIN FETCH ri.ingredient
-            WHERE r.id = :id AND r.deleted = false
-            """)
-    Optional<Recipe> findByIdWithIngredients(@Param("id") Long id);
 
     // Retseptni faqat ingredientlari bilan yuklash.
     // DIQQAT: ingredients (List/bag) va tags ni BITTA so'rovda JOIN FETCH qilsak

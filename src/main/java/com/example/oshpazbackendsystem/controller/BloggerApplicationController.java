@@ -1,6 +1,5 @@
 package com.example.oshpazbackendsystem.controller;
 
-import com.example.oshpazbackendsystem.dto.BloggerApplicationRequest;
 import com.example.oshpazbackendsystem.dto.BloggerApplicationReviewRequest;
 import com.example.oshpazbackendsystem.dto.response.BloggerApplicationDto;
 import com.example.oshpazbackendsystem.exception.ApiResponse;
@@ -30,11 +29,10 @@ public class BloggerApplicationController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Blogger bo'lish uchun ariza yuborish")
-    public ResponseEntity<ApiResponse<BloggerApplicationDto>> apply(
-            @Valid @RequestBody BloggerApplicationRequest request) {
+    @Operation(summary = "Oshpaz bo'lish uchun ariza yuborish")
+    public ResponseEntity<ApiResponse<BloggerApplicationDto>> apply() {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.created(service.apply(request)));
+                .body(ApiResponse.created(service.apply()));
     }
 
     @GetMapping("/my")

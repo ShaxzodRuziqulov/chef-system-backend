@@ -5,7 +5,7 @@ import com.example.oshpazbackendsystem.dto.response.RatingResultDto;
 import com.example.oshpazbackendsystem.entity.Recipe;
 import com.example.oshpazbackendsystem.entity.RecipeRating;
 import com.example.oshpazbackendsystem.entity.User;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.RecipeRatingRepository;
 import com.example.oshpazbackendsystem.repository.RecipeRepository;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
@@ -24,8 +24,6 @@ public class RatingService {
     private final RecipeRepository       recipeRepository;
     private final CurrentUserService     currentUserService;
 
-    // ── Baho qo'yish yoki yangilash ───────────────────────────────────────────
-
     public RatingResultDto rate(Long recipeId, RatingRequest request) {
         User   user   = currentUserService.getCurrentUser();
         Recipe recipe = recipeRepository.findById(recipeId)
@@ -43,8 +41,6 @@ public class RatingService {
 
         return buildResult(user.getId(), recipeId);
     }
-
-    // ── Mening bahom ─────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public RatingResultDto getMyRating(Long recipeId) {

@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-simplify-blogger-applications
+      author: codex
+      changes:
+        # motivation va socialLinks olib tashlanadi
+        - dropColumn:
+            tableName: blogger_applications
+            columnName: motivation
+        - dropColumn:
+            tableName: blogger_applications
+            columnName: social_links
+
+        # reviewed_at — qachon ko'rib chiqildi
+        - addColumn:
+            tableName: blogger_applications
+            columns:
+              - column:
+                  name: reviewed_at
+                  type: timestamp
+
+        # reviewed_by — qaysi admin ko'rib chiqdi
+        - addColumn:
+            tableName: blogger_applications
+            columns:
+              - column:
+                  name: reviewed_by
+                  type: uuid
+
+        - addForeignKeyConstraint:
+            baseTableName: blogger_applications
+            baseColumnNames: reviewed_by
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_blogger_app_reviewed_by

@@ -43,7 +43,7 @@ public class ShoppingListController {
         return ResponseEntity.ok(ApiResponse.ok(service.generateFromMealPlan(mealPlanId)));
     }
 
-    @PatchMapping("/{id}/items/{itemId}")
+    @PutMapping("/{id}/items/{itemId}")
     @Operation(summary = "Mahsulot holatini yangilash (PENDING / PURCHASED / SKIPPED)")
     public ResponseEntity<ApiResponse<ShoppingListDto>> updateItemStatus(
             @PathVariable Long id,

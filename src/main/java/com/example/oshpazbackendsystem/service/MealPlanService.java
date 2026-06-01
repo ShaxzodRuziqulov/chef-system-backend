@@ -10,7 +10,7 @@ import com.example.oshpazbackendsystem.entity.MealPlanEntry;
 import com.example.oshpazbackendsystem.entity.Recipe;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.entity.enums.PlanStatus;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.MealPlanEntryRepository;
 import com.example.oshpazbackendsystem.repository.MealPlanRepository;
 import com.example.oshpazbackendsystem.repository.RecipeRepository;
@@ -36,8 +36,6 @@ public class MealPlanService {
     private final RecipeRepository recipeRepository;
     private final CurrentUserService currentUserService;
 
-    // ── O'qish ───────────────────────────────────────────────────────────────
-
     @Transactional(readOnly = true)
     public Page<MealPlanResponse> findMyPlans(Pageable pageable) {
         User user = currentUserService.getCurrentUser();
@@ -52,8 +50,6 @@ public class MealPlanService {
         checkOwnership(plan);
         return toResponse(plan);
     }
-
-    // ── Yozish ───────────────────────────────────────────────────────────────
 
     public MealPlanResponse create(MealPlanCreateRequest request) {
         User user = currentUserService.getCurrentUser();
@@ -125,10 +121,8 @@ public class MealPlanService {
     public void delete(Long id) {
         MealPlan plan = getMealPlan(id);
         checkOwnership(plan);
-        mealPlanRepository.delete(plan);
+        mealPlanRepository.delete(plan); // DB CASCADE: shopping_lists ? shopping_list_items avtomatik o'chadi
     }
-
-    // ── Ichki metodlar ───────────────────────────────────────────────────────
 
     private MealPlan getMealPlan(Long id) {
         return mealPlanRepository.findByIdWithEntries(id)
@@ -141,8 +135,6 @@ public class MealPlanService {
             throw new IllegalStateException("Bu rejaga kirish uchun ruxsat yo'q");
         }
     }
-
-    // ── Manual mapping ───────────────────────────────────────────────────────
 
     private MealPlanResponse toResponse(MealPlan p) {
         List<MealPlanEntryDto> entries = p.getEntries().stream()

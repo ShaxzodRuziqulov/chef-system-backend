@@ -23,3 +23,7 @@ databaseChangeLog:
       file: db/changelog/changes/011-add-blogger-role-constraint.yaml
   - include:
       file: db/changelog/changes/012-add-reset-token.yaml
+  - include:
+      file: db/changelog/changes/013-simplify-blogger-applications.yaml
+  - include:
+      file: db/changelog/changes/014-cascade-delete-shopping.yaml

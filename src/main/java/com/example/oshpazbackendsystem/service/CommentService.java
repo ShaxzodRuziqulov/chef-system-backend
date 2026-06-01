@@ -6,7 +6,7 @@ import com.example.oshpazbackendsystem.dto.response.PageResponse;
 import com.example.oshpazbackendsystem.entity.Recipe;
 import com.example.oshpazbackendsystem.entity.RecipeComment;
 import com.example.oshpazbackendsystem.entity.User;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.RecipeCommentRepository;
 import com.example.oshpazbackendsystem.repository.RecipeRepository;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
@@ -28,8 +28,6 @@ public class CommentService {
     private final RecipeRepository        recipeRepository;
     private final CurrentUserService      currentUserService;
 
-    // ── Izohlar ro'yxati (sahifalangan) ───────────────────────────────────────
-
     @Transactional(readOnly = true)
     public PageResponse<CommentDto> getComments(Long recipeId, Pageable pageable) {
         if (!recipeRepository.existsById(recipeId)) {
@@ -41,8 +39,6 @@ public class CommentService {
                 .map(c -> CommentDto.from(c, currentUserId));
         return PageResponse.of(page);
     }
-
-    // ── Izoh qo'shish ─────────────────────────────────────────────────────────
 
     public CommentDto addComment(Long recipeId, CommentRequest request) {
         User   user   = currentUserService.getCurrentUser();

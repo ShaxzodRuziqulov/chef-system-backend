@@ -55,10 +55,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDto>> update(
             @PathVariable UUID id,
             @Valid @RequestBody AdminUserUpdateRequest req) {
-        // Agar newPassword to'ldirilgan bo'lsa — parolni ham yangilayik
-        if (req.getNewPassword() != null && !req.getNewPassword().isBlank()) {
-            service.resetPasswordByAdmin(id, req.getNewPassword());
-        }
         return ResponseEntity.ok(ApiResponse.ok(service.updateByAdmin(id, req)));
     }
 

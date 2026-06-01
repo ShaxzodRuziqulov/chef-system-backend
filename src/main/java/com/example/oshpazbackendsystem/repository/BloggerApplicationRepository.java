@@ -21,4 +21,7 @@ public interface BloggerApplicationRepository extends JpaRepository<BloggerAppli
 
     // Foydalanuvchida PENDING ariza bormi
     boolean existsByUserIdAndStatus(UUID userId, BloggerApplicationStatus status);
+
+    // Foydalanuvchining oxirgi APPROVED arizasini topish (leaveBlogger uchun)
+    Optional<BloggerApplication> findTopByUserIdAndStatusOrderByCreatedAtDesc(UUID userId, BloggerApplicationStatus status);
 }

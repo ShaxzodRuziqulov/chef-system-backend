@@ -5,7 +5,7 @@ import com.example.oshpazbackendsystem.dto.RecipeUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.*;
 import com.example.oshpazbackendsystem.entity.*;
 import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.*;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
 import jakarta.persistence.EntityManager;
@@ -34,8 +34,6 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final CurrentUserService currentUserService;
     private final EntityManager entityManager;
-
-    // ── O'qish ───────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> findAll(Pageable pageable) {
@@ -93,8 +91,6 @@ public class RecipeService {
         return recipeRepository.findByAuthorIdAndDeletedFalse(currentUser.getId(), pageable)
                 .map(this::toDto);
     }
-
-    // ── Yozish ───────────────────────────────────────────────────────────────
 
     public RecipeDto create(RecipeCreateRequest request) {
         User author = currentUserService.getCurrentUser();
@@ -163,6 +159,18 @@ public class RecipeService {
                         .build());
             }
             recipe.setSteps(steps);
+        }
+
+        // Gallery rasmlari
+        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+            for (int i = 0; i < request.getImageUrls().size(); i++) {
+                recipe.getImages().add(RecipeImage.builder()
+                        .recipe(recipe)
+                        .imageUrl(request.getImageUrls().get(i))
+                        .primaryImage(i == 0)
+                        .orderIndex(i)
+                        .build());
+            }
         }
 
         // Ozuqaviy ma'lumot
@@ -245,6 +253,19 @@ public class RecipeService {
             }
         }
 
+        // Gallery rasmlari (null = o'zgartirma, bo'sh list = hammasini o'chir)
+        if (request.getImageUrls() != null) {
+            recipe.getImages().clear();
+            for (int i = 0; i < request.getImageUrls().size(); i++) {
+                recipe.getImages().add(RecipeImage.builder()
+                        .recipe(recipe)
+                        .imageUrl(request.getImageUrls().get(i))
+                        .primaryImage(i == 0)
+                        .orderIndex(i)
+                        .build());
+            }
+        }
+
         if (request.getNutritionalInfo() != null) {
             var ni = request.getNutritionalInfo();
             if (recipe.getNutritionalInfo() == null) {
@@ -275,8 +296,6 @@ public class RecipeService {
         recipeRepository.incrementViewCount(id);
     }
 
-    // ── Ichki metodlar ───────────────────────────────────────────────────────
-
     private void checkOwnership(Recipe recipe) {
         User current = currentUserService.getCurrentUser();
         boolean isAdmin = current.getAuthorities().stream()
@@ -285,8 +304,6 @@ public class RecipeService {
             throw new IllegalStateException("Bu retseptni o'zgartirish uchun ruxsat yo'q");
         }
     }
-
-    // ── Manual mapping: Recipe → RecipeDto ───────────────────────────────────
 
     public RecipeDto toDto(Recipe r) {
         return RecipeDto.builder()
@@ -341,6 +358,15 @@ public class RecipeService {
                                 .instruction(s.getInstruction())
                                 .imageUrl(s.getImageUrl())
                                 .durationMinutes(s.getDurationMinutes())
+                                .build()).collect(Collectors.toList())
+                        : List.of())
+                .images(r.getImages() != null
+                        ? r.getImages().stream().map(img -> RecipeImageDto.builder()
+                                .id(img.getId())
+                                .imageUrl(img.getImageUrl())
+                                .primaryImage(img.isPrimaryImage())
+                                .caption(img.getCaption())
+                                .orderIndex(img.getOrderIndex())
                                 .build()).collect(Collectors.toList())
                         : List.of())
                 .nutritionalInfo(r.getNutritionalInfo() != null

@@ -27,11 +27,6 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
             """)
     Optional<ShoppingList> findByMealPlanId(@Param("mealPlanId") Long mealPlanId);
 
-    // Native SQL bilan o'chirish — Hibernate cache'ini chetlab o'tadi
-    @Modifying
-    @Query(value = "DELETE FROM shopping_lists WHERE meal_plan_id = :mealPlanId", nativeQuery = true)
-    void deleteByMealPlanIdNative(@Param("mealPlanId") Long mealPlanId);
-
     // Foydalanuvchining tugallanmagan ro'yxatlari
     Page<ShoppingList> findByUserIdAndCompletedFalse(UUID userId, Pageable pageable);
 

@@ -88,14 +88,6 @@ public class RecipeController {
         return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
     }
 
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
-    @Operation(summary = "Retseptni yangilash (qisman) — faqat BLOGGER va ADMIN")
-    public ResponseEntity<ApiResponse<RecipeDto>> patch(@PathVariable Long id,
-                                            @Valid @RequestBody RecipeUpdateRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok(service.update(id, request)));
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
     @Operation(summary = "Retseptni o'chirish — faqat BLOGGER va ADMIN")

@@ -61,7 +61,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok(authService.toAuthUserResponse(currentUser)));
     }
 
-    @PatchMapping("/profile")
+    @PutMapping("/profile")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<AuthUserResponse>> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request) {
@@ -70,7 +70,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok(updated));
     }
 
-    @PatchMapping("/password")
+    @PutMapping("/password")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> changePassword(
             @Valid @RequestBody ChangePasswordRequest request) {

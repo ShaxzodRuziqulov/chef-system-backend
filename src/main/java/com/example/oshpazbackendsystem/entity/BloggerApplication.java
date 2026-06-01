@@ -5,6 +5,8 @@ import com.example.oshpazbackendsystem.entity.enums.BloggerApplicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "blogger_applications", indexes = {
     @Index(name = "idx_blogger_app_user",   columnList = "user_id"),
@@ -25,14 +27,6 @@ public class BloggerApplication extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Foydalanuvchi yozgan motivatsiya matni
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String motivation;
-
-    // Instagram, YouTube, blog URL — ixtiyoriy
-    @Column(length = 500)
-    private String socialLinks;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
@@ -41,4 +35,13 @@ public class BloggerApplication extends BaseEntity {
     // Admin rad etganda sabab ko'rsatishi uchun
     @Column(columnDefinition = "TEXT")
     private String adminNote;
+
+    // Qachon ko'rib chiqildi
+    @Column
+    private LocalDateTime reviewedAt;
+
+    // Qaysi admin ko'rib chiqdi
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by")
+    private User reviewedBy;
 }

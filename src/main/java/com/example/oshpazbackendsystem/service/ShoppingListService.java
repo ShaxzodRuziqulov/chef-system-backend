@@ -5,9 +5,8 @@ import com.example.oshpazbackendsystem.dto.response.ShoppingListDto;
 import com.example.oshpazbackendsystem.dto.response.ShoppingListItemDto;
 import com.example.oshpazbackendsystem.entity.*;
 import com.example.oshpazbackendsystem.entity.enums.ShoppingItemStatus;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.MealPlanRepository;
-import com.example.oshpazbackendsystem.repository.ShoppingListItemRepository;
 import com.example.oshpazbackendsystem.repository.ShoppingListRepository;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +28,8 @@ import java.util.stream.Collectors;
 public class ShoppingListService {
 
     private final ShoppingListRepository shoppingListRepository;
-    private final ShoppingListItemRepository itemRepository;
     private final MealPlanRepository mealPlanRepository;
     private final CurrentUserService currentUserService;
-
-    // ── O'qish ───────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public Page<ShoppingListDto> findMyLists(Pageable pageable) {
@@ -49,8 +45,6 @@ public class ShoppingListService {
         checkOwnership(list);
         return toDto(list);
     }
-
-    // ── Reja asosida avtomatik yaratish ─────────────────────────────────────
 
     public ShoppingListDto generateFromMealPlan(Long mealPlanId) {
         User user = currentUserService.getCurrentUser();

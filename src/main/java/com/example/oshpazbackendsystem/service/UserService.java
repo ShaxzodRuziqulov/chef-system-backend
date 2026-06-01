@@ -3,11 +3,14 @@ package com.example.oshpazbackendsystem.service;
 import com.example.oshpazbackendsystem.dto.AdminUserUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.UserDto;
 import com.example.oshpazbackendsystem.entity.User;
+import com.example.oshpazbackendsystem.entity.enums.BloggerApplicationStatus;
 import com.example.oshpazbackendsystem.entity.enums.Role;
-import com.example.oshpazbackendsystem.exeption.BadRequestException;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.BadRequestException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
+import com.example.oshpazbackendsystem.repository.BloggerApplicationRepository;
 import com.example.oshpazbackendsystem.repository.UserRepository;
+import com.example.oshpazbackendsystem.service.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,10 +26,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository    repository;
-    private final UserMapper        mapper;
-    private final PasswordEncoder   passwordEncoder;
-    private final com.example.oshpazbackendsystem.service.security.CurrentUserService currentUserService;
+    private final UserRepository               repository;
+    private final UserMapper                   mapper;
+    private final PasswordEncoder              passwordEncoder;
+    private final CurrentUserService           currentUserService;
+    private final BloggerApplicationRepository applicationRepository;
 
     public UserDto create(UserDto response) {
         User user = mapper.toEntity(response);
@@ -59,21 +63,16 @@ public class UserService {
         return repository.countByActiveTrue();
     }
 
-    /** Admin tomonidan foydalanuvchi parolini yangilash (joriy parolsiz) */
-    public void resetPasswordByAdmin(UUID id, String newPassword) {
-        User user = findByUserId(id);
-        user.setPassword(passwordEncoder.encode(newPassword));
-        repository.save(user);
-    }
-
-    /** Admin tomonidan foydalanuvchi ma'lumotlarini yangilash */
+    /** Admin tomonidan foydalanuvchi ma'lumotlarini yangilash (parol ham ixtiyoriy) */
     public UserDto updateByAdmin(UUID id, AdminUserUpdateRequest req) {
         User user = findByUserId(id);
-        if (req.getFullName() != null)  user.setFullName(req.getFullName());
-        if (req.getUsername() != null)  user.setUsername(req.getUsername());
-        if (req.getEmail()    != null)  user.setEmail(req.getEmail());
-        if (req.getRole()     != null)  user.setRole(req.getRole());
-        if (req.getActive()   != null)  user.setActive(req.getActive());
+        if (req.getFullName()    != null)                    user.setFullName(req.getFullName());
+        if (req.getUsername()    != null)                    user.setUsername(req.getUsername());
+        if (req.getEmail()       != null)                    user.setEmail(req.getEmail());
+        if (req.getRole()        != null)                    user.setRole(req.getRole());
+        if (req.getActive()      != null)                    user.setActive(req.getActive());
+        if (req.getNewPassword() != null && !req.getNewPassword().isBlank())
+            user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         return mapper.toDto(repository.save(user));
     }
 
@@ -115,9 +114,19 @@ public class UserService {
     public UserDto leaveBlogger() {
         User user = currentUserService.getCurrentUser();
         if (user.getRole() != Role.BLOGGER) {
-            throw new BadRequestException("NOT_BLOGGER", "Siz oshpaz rolidа emassiz");
+            throw new BadRequestException("NOT_BLOGGER", "Siz oshpaz rolida emassiz");
         }
         user.setRole(Role.USER);
-        return mapper.toDto(repository.save(user));
+        repository.save(user);
+
+        // Oxirgi APPROVED arizani CANCELLED ga o'tkazish
+        applicationRepository
+                .findTopByUserIdAndStatusOrderByCreatedAtDesc(user.getId(), BloggerApplicationStatus.APPROVED)
+                .ifPresent(app -> {
+                    app.setStatus(BloggerApplicationStatus.CANCELLED);
+                    applicationRepository.save(app);
+                });
+
+        return mapper.toDto(user);
     }
 }

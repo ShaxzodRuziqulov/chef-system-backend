@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-cascade-delete-shopping
+      author: codex
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- shopping_lists.meal_plan_id: mavjud FK ni topib o'chiramiz (nomi qanday bo'lishidan qat'iy nazar)
+              DO $$
+              DECLARE r record;
+              BEGIN
+                FOR r IN
+                  SELECT tc.constraint_name
+                  FROM information_schema.table_constraints tc
+                  JOIN information_schema.key_column_usage kcu
+                    ON tc.constraint_name = kcu.constraint_name
+                    AND tc.table_schema   = kcu.table_schema
+                    AND tc.table_name     = kcu.table_name
+                  WHERE tc.table_name      = 'shopping_lists'
+                    AND tc.constraint_type = 'FOREIGN KEY'
+                    AND kcu.column_name    = 'meal_plan_id'
+                LOOP
+                  EXECUTE 'ALTER TABLE shopping_lists DROP CONSTRAINT "' || r.constraint_name || '"';
+                END LOOP;
+              END $$;
+
+              ALTER TABLE shopping_lists
+                ADD CONSTRAINT fk_shopping_lists_meal_plan
+                FOREIGN KEY (meal_plan_id) REFERENCES meal_plans(id) ON DELETE CASCADE;
+
+              -- shopping_list_items.shopping_list_id: mavjud FK ni topib o'chiramiz
+              DO $$
+              DECLARE r record;
+              BEGIN
+                FOR r IN
+                  SELECT tc.constraint_name
+                  FROM information_schema.table_constraints tc
+                  JOIN information_schema.key_column_usage kcu
+                    ON tc.constraint_name = kcu.constraint_name
+                    AND tc.table_schema   = kcu.table_schema
+                    AND tc.table_name     = kcu.table_name
+                  WHERE tc.table_name      = 'shopping_list_items'
+                    AND tc.constraint_type = 'FOREIGN KEY'
+                    AND kcu.column_name    = 'shopping_list_id'
+                LOOP
+                  EXECUTE 'ALTER TABLE shopping_list_items DROP CONSTRAINT "' || r.constraint_name || '"';
+                END LOOP;
+              END $$;
+
+              ALTER TABLE shopping_list_items
+                ADD CONSTRAINT fk_shopping_list_items_list
+                FOREIGN KEY (shopping_list_id) REFERENCES shopping_lists(id) ON DELETE CASCADE;

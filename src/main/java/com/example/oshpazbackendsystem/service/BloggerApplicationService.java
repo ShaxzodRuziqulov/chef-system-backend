@@ -1,14 +1,13 @@
 package com.example.oshpazbackendsystem.service;
 
-import com.example.oshpazbackendsystem.dto.BloggerApplicationRequest;
 import com.example.oshpazbackendsystem.dto.BloggerApplicationReviewRequest;
 import com.example.oshpazbackendsystem.dto.response.BloggerApplicationDto;
 import com.example.oshpazbackendsystem.entity.BloggerApplication;
 import com.example.oshpazbackendsystem.entity.User;
 import com.example.oshpazbackendsystem.entity.enums.BloggerApplicationStatus;
 import com.example.oshpazbackendsystem.entity.enums.Role;
-import com.example.oshpazbackendsystem.exeption.BadRequestException;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.BadRequestException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.mapper.UserMapper;
 import com.example.oshpazbackendsystem.repository.BloggerApplicationRepository;
 import com.example.oshpazbackendsystem.repository.UserRepository;
@@ -19,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class BloggerApplicationService {
@@ -28,13 +29,13 @@ public class BloggerApplicationService {
     private final CurrentUserService currentUserService;
     private final UserMapper userMapper;
 
-    // Foydalanuvchi blogger bo'lish uchun ariza yuboradi
+    // Foydalanuvchi ariza yuboradi (hech qanday qo'shimcha ma'lumot shart emas)
     @Transactional
-    public BloggerApplicationDto apply(BloggerApplicationRequest request) {
+    public BloggerApplicationDto apply() {
         User user = currentUserService.getCurrentUser();
 
         if (user.getRole() == Role.BLOGGER || user.getRole() == Role.ADMIN) {
-            throw new BadRequestException("ALREADY_BLOGGER", "Siz allaqachon blogger yoki adminsiz");
+            throw new BadRequestException("ALREADY_BLOGGER", "Siz allaqachon oshpaz yoki adminsiz");
         }
 
         if (applicationRepository.existsByUserIdAndStatus(user.getId(), BloggerApplicationStatus.PENDING)) {
@@ -43,8 +44,6 @@ public class BloggerApplicationService {
 
         BloggerApplication application = BloggerApplication.builder()
                 .user(user)
-                .motivation(request.getMotivation())
-                .socialLinks(request.getSocialLinks())
                 .status(BloggerApplicationStatus.PENDING)
                 .build();
 
@@ -82,9 +81,10 @@ public class BloggerApplicationService {
             throw new BadRequestException("ALREADY_REVIEWED", "Bu ariza allaqachon ko'rib chiqilgan");
         }
 
+        User admin = currentUserService.getCurrentUser();
+
         if (request.getApprove()) {
             app.setStatus(BloggerApplicationStatus.APPROVED);
-            // Foydalanuvchi rolini BLOGGER ga o'zgartirish
             User user = app.getUser();
             user.setRole(Role.BLOGGER);
             userRepository.save(user);
@@ -93,6 +93,9 @@ public class BloggerApplicationService {
         }
 
         app.setAdminNote(request.getAdminNote());
+        app.setReviewedAt(LocalDateTime.now());
+        app.setReviewedBy(admin);
+
         return toDto(applicationRepository.save(app));
     }
 
@@ -100,11 +103,11 @@ public class BloggerApplicationService {
         return BloggerApplicationDto.builder()
                 .id(app.getId())
                 .user(userMapper.toDto(app.getUser()))
-                .motivation(app.getMotivation())
-                .socialLinks(app.getSocialLinks())
                 .status(app.getStatus())
                 .adminNote(app.getAdminNote())
                 .createdAt(app.getCreatedAt())
+                .reviewedAt(app.getReviewedAt())
+                .reviewedBy(app.getReviewedBy() != null ? userMapper.toDto(app.getReviewedBy()) : null)
                 .build();
     }
 }

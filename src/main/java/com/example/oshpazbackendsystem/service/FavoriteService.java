@@ -2,7 +2,7 @@ package com.example.oshpazbackendsystem.service;
 
 import com.example.oshpazbackendsystem.dto.response.PageResponse;
 import com.example.oshpazbackendsystem.dto.response.RecipeDto;
-import com.example.oshpazbackendsystem.exeption.NotFoundException;
+import com.example.oshpazbackendsystem.exception.NotFoundException;
 import com.example.oshpazbackendsystem.repository.RecipeRepository;
 import com.example.oshpazbackendsystem.repository.UserRepository;
 import com.example.oshpazbackendsystem.service.security.CurrentUserService;
@@ -25,8 +25,6 @@ public class FavoriteService {
     private final CurrentUserService currentUserService;
     private final RecipeService      recipeService;
 
-    // ── Toggle: qo'shish yoki o'chirish ──────────────────────────────────────
-
     public boolean toggle(Long recipeId) {
         UUID userId = currentUserService.getCurrentUserId();
 
@@ -43,15 +41,11 @@ public class FavoriteService {
         return !wasFavorited;  // yangi holat: true = saqlandi, false = o'chirildi
     }
 
-    // ── Saqlangan retseptlar ID lari (ko'rsatish uchun: ♥ belgisi) ─────────
-
     @Transactional(readOnly = true)
     public Set<Long> getFavoriteIds() {
         UUID userId = currentUserService.getCurrentUserId();
         return userRepository.findFavoriteIdsByUserId(userId);
     }
-
-    // ── Saqlangan retseptlar ro'yxati (sahifalangan) ─────────────────────────
 
     @Transactional(readOnly = true)
     public Page<RecipeDto> getFavorites(Pageable pageable) {

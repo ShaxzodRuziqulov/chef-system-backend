@@ -65,7 +65,24 @@
       "PowerShell(gcloud config get-value project 2>$null)",
       "mcp__Claude_in_Chrome__navigate",
       "mcp__Claude_in_Chrome__computer",
-      "WebFetch(domain:oshpaz-frontend-845310076735.us-central1.run.app)"
+      "WebFetch(domain:oshpaz-frontend-845310076735.us-central1.run.app)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(gcloud projects *)",
+      "Bash(docker --version)",
+      "Bash(gcloud auth *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(grep -E \"\\\\.java$\")",
+      "Bash(grep \"\\\\.java$\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\" -Recurse -Depth 2 -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-Content \"D:\\\\12\\\\chef-frontend-system\\\\.env*\" -ErrorAction SilentlyContinue)",
+      "Bash(findstr -i \"docker\\\\|cloud\\\\|yaml\\\\|yml\\\\|sh\")",
+      "Bash(dir D:\\\\12\\\\chef-frontend-system\\\\src /b)",
+      "Bash(dir /s /b \"D:\\\\12\\\\chef-frontend-system\\\\src\\\\*MealPlan*\")",
+      "PowerShell(Get-Content \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\controller\\\\RecipeController.java\" | Select-String \"@PatchMapping|PATCH\" | ForEach-Object { $_.Line.Trim\\(\\) })"
     ]
   }
 }

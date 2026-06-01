@@ -43,6 +43,10 @@ public class RecipeUpdateRequest {
     @Size(max = 500)
     private String imageUrl;
 
+    // Gallery rasmlari (null = o'zgartirma, bo'sh list = hammasini o'chir)
+    @Size(max = 10, message = "Maksimal 10 ta gallery rasm qo'shish mumkin")
+    private List<@Size(max = 500) String> imageUrls;
+
     @Size(max = 500)
     private String videoUrl;
 

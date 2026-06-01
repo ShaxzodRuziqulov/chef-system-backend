@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 public class BloggerApplicationDto {
     private Long id;
     private UserDto user;
-    private String motivation;
-    private String socialLinks;
     private BloggerApplicationStatus status;
     private String adminNote;
     private LocalDateTime createdAt;
+    private LocalDateTime reviewedAt;
+    private UserDto reviewedBy;
 }
