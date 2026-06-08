@@ -50,7 +50,7 @@ public class RecipeService {
         // Private retsept faqat egasiga ko'rinadi
         if (!recipe.isVisible()) {
             UUID viewerId = currentUserService.getCurrentUserIdOrNull();
-            if (viewerId == null || !recipe.getAuthor().getId().equals(viewerId)) {
+            if (!recipe.getAuthor().getId().equals(viewerId)) {
                 throw new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + id);
             }
         }
@@ -206,7 +206,9 @@ public class RecipeService {
         if (request.getServings() != null)       recipe.setServings(request.getServings());
         if (request.getDifficultyLevel() != null) recipe.setDifficultyLevel(request.getDifficultyLevel());
         if (request.getImageUrl() != null)       recipe.setImageUrl(request.getImageUrl());
-        if (request.getVideoUrl() != null)       recipe.setVideoUrl(request.getVideoUrl());
+        // videoUrl: bo'sh string → null (o'chirish), string → yangilash, null → o'zgartirma
+        if (request.getVideoUrl() != null)
+            recipe.setVideoUrl(request.getVideoUrl().isBlank() ? null : request.getVideoUrl());
         if (request.getVisible() != null)        recipe.setVisible(request.getVisible());
 
         if (request.getCategoryId() != null) {
