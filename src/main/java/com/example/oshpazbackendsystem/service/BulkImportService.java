@@ -10,6 +10,7 @@ import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import com.example.oshpazbackendsystem.entity.enums.MeasurementUnit;
 import com.example.oshpazbackendsystem.repository.CategoryRepository;
 import com.example.oshpazbackendsystem.repository.IngredientRepository;
+import com.example.oshpazbackendsystem.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -30,6 +31,7 @@ public class BulkImportService {
     private final RecipeService recipeService;
     private final CategoryRepository categoryRepository;
     private final IngredientRepository ingredientRepository;
+    private final RecipeRepository recipeRepository;
 
     // ── Columns ─────────────────────────────────────────────────────────
     // 0:title_uz  1:title_ru  2:title_eng  3:description  4:category
@@ -39,6 +41,7 @@ public class BulkImportService {
     public BulkImportResultDto importFromExcel(MultipartFile file) throws IOException {
         List<RowResult> results = new ArrayList<>();
         int successCount = 0;
+        int skippedCount = 0;
         int failedCount  = 0;
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
@@ -51,6 +54,20 @@ public class BulkImportService {
                 if (row == null || isRowEmpty(row)) continue;
 
                 String titleUz = cellStr(row, 0);
+
+                // Dublikat tekshiruvi — bir xil titleUz bilan retsept allaqachon mavjudmi
+                if (titleUz != null && recipeRepository.existsByTitleUzIgnoreCaseAndDeletedFalse(titleUz.trim())) {
+                    skippedCount++;
+                    log.info("Bulk import row {} o'tkazib yuborildi (dublikat): {}", i + 1, titleUz);
+                    results.add(RowResult.builder()
+                            .row(i + 1)
+                            .status("SKIPPED")
+                            .titleUz(titleUz)
+                            .error("Bunday nomli retsept allaqachon mavjud")
+                            .build());
+                    continue;
+                }
+
                 try {
                     RecipeCreateRequest req = buildRequest(row);
                     recipeService.create(req);
@@ -74,8 +91,9 @@ public class BulkImportService {
         }
 
         return BulkImportResultDto.builder()
-                .totalRows(successCount + failedCount)
+                .totalRows(successCount + skippedCount + failedCount)
                 .successCount(successCount)
+                .skippedCount(skippedCount)
                 .failedCount(failedCount)
                 .results(results)
                 .build();

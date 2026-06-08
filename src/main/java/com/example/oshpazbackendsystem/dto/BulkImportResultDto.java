@@ -11,6 +11,7 @@ public class BulkImportResultDto {
 
     private int totalRows;
     private int successCount;
+    private int skippedCount;
     private int failedCount;
     private List<RowResult> results;
 
@@ -18,7 +19,7 @@ public class BulkImportResultDto {
     @Builder
     public static class RowResult {
         private int row;
-        private String status;   // "SUCCESS" | "ERROR"
+        private String status;   // "SUCCESS" | "SKIPPED" | "ERROR"
         private String titleUz;
         private String error;
     }

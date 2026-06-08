@@ -86,6 +86,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("UPDATE Recipe r SET r.viewCount = r.viewCount + 1 WHERE r.id = :id")
     void incrementViewCount(@Param("id") Long id);
 
+    // Bulk import — dublikat tekshiruvi uchun
+    boolean existsByTitleUzIgnoreCaseAndDeletedFalse(String titleUz);
+
     // Statistika uchun
     long countByVisibleTrueAndDeletedFalse();
 
