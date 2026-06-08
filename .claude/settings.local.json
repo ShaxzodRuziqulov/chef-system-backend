@@ -82,7 +82,13 @@
       "Bash(findstr -i \"docker\\\\|cloud\\\\|yaml\\\\|yml\\\\|sh\")",
       "Bash(dir D:\\\\12\\\\chef-frontend-system\\\\src /b)",
       "Bash(dir /s /b \"D:\\\\12\\\\chef-frontend-system\\\\src\\\\*MealPlan*\")",
-      "PowerShell(Get-Content \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\controller\\\\RecipeController.java\" | Select-String \"@PatchMapping|PATCH\" | ForEach-Object { $_.Line.Trim\\(\\) })"
+      "PowerShell(Get-Content \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\controller\\\\RecipeController.java\" | Select-String \"@PatchMapping|PATCH\" | ForEach-Object { $_.Line.Trim\\(\\) })",
+      "WebFetch(domain:www.youtube.com)",
+      "Bash(Remove-Item -Recurse -Force \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\exeption\")",
+      "Bash(xargs grep -l \"route\\\\|guard\\\\|navigation\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\\\\src\" -Recurse -Filter \"*.vue\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\" -Recurse -Directory)",
+      "PowerShell(python --version 2>&1)"
     ]
   }
 }

@@ -22,9 +22,11 @@ public class BulkImportController {
 
     @PostMapping(value = "/bulk-import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Excel fayldan retseptlarni ommaviy yuklash")
+    @Operation(summary = "Excel fayldan retseptlarni ommaviy yuklash",
+               description = "mode=SKIP (default) — dublikatni o'tkazib yuborish | mode=UPDATE — mavjudni yangilash")
     public ResponseEntity<BulkImportResultDto> bulkImport(
-            @RequestPart("file") MultipartFile file) throws Exception {
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "mode", defaultValue = "SKIP") String mode) throws Exception {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -34,7 +36,7 @@ public class BulkImportController {
             return ResponseEntity.badRequest().build();
         }
 
-        BulkImportResultDto result = bulkImportService.importFromExcel(file);
+        BulkImportResultDto result = bulkImportService.importFromExcel(file, mode);
         return ResponseEntity.ok(result);
     }
 
