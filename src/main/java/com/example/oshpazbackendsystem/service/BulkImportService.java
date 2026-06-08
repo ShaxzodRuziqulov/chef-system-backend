@@ -64,7 +64,7 @@ public class BulkImportService {
 
                 // Mavjudligini tekshirish
                 java.util.Optional<Recipe> existing = titleUz != null
-                        ? recipeRepository.findByTitleUzIgnoreCaseAndDeletedFalse(titleUz.trim())
+                        ? recipeRepository.findFirstByTitleUzIgnoreCaseAndDeletedFalse(titleUz.trim())
                         : java.util.Optional.empty();
 
                 if (existing.isPresent()) {

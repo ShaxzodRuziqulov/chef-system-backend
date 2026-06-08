@@ -89,8 +89,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     // Bulk import — dublikat tekshiruvi uchun
     boolean existsByTitleUzIgnoreCaseAndDeletedFalse(String titleUz);
 
-    // Bulk import — yangilash uchun mavjud retseptni topish
-    java.util.Optional<Recipe> findByTitleUzIgnoreCaseAndDeletedFalse(String titleUz);
+    // Bulk import — yangilash uchun mavjud retseptni topish (dublikat bo'lsa birinchisini oladi)
+    java.util.Optional<Recipe> findFirstByTitleUzIgnoreCaseAndDeletedFalse(String titleUz);
 
     // Statistika uchun
     long countByVisibleTrueAndDeletedFalse();

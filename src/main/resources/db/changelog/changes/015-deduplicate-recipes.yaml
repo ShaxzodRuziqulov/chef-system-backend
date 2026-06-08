@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-deduplicate-recipes
+      author: system
+      comment: "Bir xil title_uz bilan yaratilgan dublikat retseptlarni soft-delete qilish (eng kichik id qoladi)"
+      changes:
+        - sql:
+            sql: |
+              UPDATE recipes
+              SET deleted = true
+              WHERE deleted = false
+                AND id NOT IN (
+                  SELECT MIN(id)
+                  FROM recipes
+                  WHERE deleted = false
+                  GROUP BY LOWER(title_uz)
+                );

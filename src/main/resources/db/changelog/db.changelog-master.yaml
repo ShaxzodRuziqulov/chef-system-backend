@@ -27,3 +27,5 @@ databaseChangeLog:
       file: db/changelog/changes/013-simplify-blogger-applications.yaml
   - include:
       file: db/changelog/changes/014-cascade-delete-shopping.yaml
+  - include:
+      file: db/changelog/changes/015-deduplicate-recipes.yaml
