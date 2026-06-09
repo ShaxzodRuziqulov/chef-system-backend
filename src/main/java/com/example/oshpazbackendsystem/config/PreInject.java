@@ -22,13 +22,15 @@ public class PreInject {
 //    @Transactional
     public void setDefaultUsers() {
 
-        if (userRepository.count() == 0) {
-            User user = new User();
-            user.setUsername("admin");
-            user.setPassword(encodePassword("1234"));
-            user.setRole(Role.ADMIN);
-            user.setEmail("admin@email.com");
-            user.setFullName("Admin");
+        if (!userRepository.existsByUsername("admin")) {
+            User user = User.builder()
+                    .username("admin")
+                    .password(encodePassword("1234"))
+                    .role(Role.ADMIN)
+                    .email("admin@email.com")
+                    .fullName("Admin")
+                    .active(true)
+                    .build();
             userRepository.save(user);
         }
     }
