@@ -48,10 +48,12 @@ public class SecurityConfiguration {
                         // Preflight (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Auth endpointlari — faqat ochiq (register, login, refresh)
+                        // Auth endpointlari — faqat ochiq (register, login, refresh, parol tiklash)
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()
 
                         // Swagger UI — hamma uchun ochiq
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()

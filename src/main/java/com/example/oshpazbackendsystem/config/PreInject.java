@@ -32,6 +32,14 @@ public class PreInject {
                     .active(true)
                     .build();
             userRepository.save(user);
+        } else {
+            // Eski buggy kod bilan yaratilgan admin active=false bo'lishi mumkin — tuzatamiz
+            userRepository.findByUsername("admin").ifPresent(admin -> {
+                if (!admin.isActive()) {
+                    admin.setActive(true);
+                    userRepository.save(admin);
+                }
+            });
         }
     }
 }

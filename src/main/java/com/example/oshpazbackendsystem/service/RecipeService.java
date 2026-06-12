@@ -316,6 +316,8 @@ public class RecipeService {
                 .description(r.getDescription())
                 .categoryId(r.getCategory() != null ? r.getCategory().getId() : null)
                 .categoryNameUz(r.getCategory() != null ? r.getCategory().getNameUz() : null)
+                .categoryNameRu(r.getCategory() != null ? r.getCategory().getNameRu() : null)
+                .categoryNameEng(r.getCategory() != null ? r.getCategory().getNameEng() : null)
                 .prepTimeMinutes(r.getPrepTimeMinutes())
                 .cookTimeMinutes(r.getCookTimeMinutes())
                 .totalTimeMinutes(

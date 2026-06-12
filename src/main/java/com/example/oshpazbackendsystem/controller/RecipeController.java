@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.controller;
 
+import com.example.oshpazbackendsystem.dto.BulkImportResultDto;
 import com.example.oshpazbackendsystem.dto.RecipeCreateRequest;
 import com.example.oshpazbackendsystem.dto.RecipeUpdateRequest;
 import com.example.oshpazbackendsystem.dto.response.PageResponse;
@@ -7,6 +8,7 @@ import com.example.oshpazbackendsystem.dto.response.RecipeDto;
 import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import com.example.oshpazbackendsystem.exception.ApiResponse;
 import com.example.oshpazbackendsystem.service.RecipeService;
+import com.example.oshpazbackendsystem.service.UserRecipeImportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,10 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class RecipeController {
 
     private final RecipeService service;
+    private final UserRecipeImportService importService;
 
     @GetMapping
     @Operation(summary = "Barcha ochiq retseptlar")
@@ -101,5 +107,62 @@ public class RecipeController {
     public ResponseEntity<Void> incrementView(@PathVariable Long id) {
         service.incrementViewCount(id);
         return ResponseEntity.ok().build();
+    }
+
+    // ── Excel import / export ────────────────────────────────────────────────
+
+    private static final long MAX_EXCEL_BYTES = 10L * 1024 * 1024; // 10 MB
+    private static final MediaType XLSX = MediaType.parseMediaType(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Exceldan retsept yuklash — BLOGGER va ADMIN",
+               description = "3 varaqli shablon. mode=SKIP (default) — dublikatni o'tkazib yuborish | mode=UPDATE — mavjudni yangilash (faqat ADMIN)")
+    public ResponseEntity<ApiResponse<BulkImportResultDto>> importRecipes(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "mode", defaultValue = "SKIP") String mode) throws Exception {
+
+        if (file.isEmpty())
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.<BulkImportResultDto>builder()
+                            .success(false).status(400).message("Fayl bo'sh").build());
+
+        String filename = file.getOriginalFilename();
+        if (filename == null || !filename.toLowerCase().endsWith(".xlsx"))
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.<BulkImportResultDto>builder()
+                            .success(false).status(400).message("Faqat .xlsx format qabul qilinadi").build());
+
+        if (file.getSize() > MAX_EXCEL_BYTES)
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.<BulkImportResultDto>builder()
+                            .success(false).status(400).message("Excel fayl 10 MB dan oshmasligi kerak").build());
+
+        return ResponseEntity.ok(ApiResponse.ok(importService.importFromExcel(file, mode)));
+    }
+
+    @GetMapping("/import/template")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Excel shablon yuklab olish — BLOGGER va ADMIN",
+               description = "lang=uz (default) | lang=ru | lang=en")
+    public ResponseEntity<byte[]> importTemplate(
+            @RequestParam(value = "lang", defaultValue = "uz") String lang) throws Exception {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"retsept_shablon.xlsx\"")
+                .contentType(XLSX)
+                .body(importService.generateTemplate(lang));
+    }
+
+    @GetMapping("/export")
+    @PreAuthorize("hasAnyRole('BLOGGER', 'ADMIN')")
+    @Operation(summary = "Retseptlarni Excel ga eksport qilish — BLOGGER va ADMIN",
+               description = "BLOGGER — faqat o'z retseptlarini, ADMIN — barcha retseptlarni eksport qiladi. Natija import shabloni bilan mos keladi.")
+    public ResponseEntity<byte[]> exportRecipes() throws Exception {
+        String filename = "retseptlar_" + java.time.LocalDate.now() + ".xlsx";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(XLSX)
+                .body(importService.exportToExcel());
     }
 }

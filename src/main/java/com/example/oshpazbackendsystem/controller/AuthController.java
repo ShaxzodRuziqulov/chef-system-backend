@@ -80,21 +80,16 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody Map<String, String> body) {
-        authService.forgotPassword(body.getOrDefault("usernameOrEmail", ""));
-        return ResponseEntity.ok(ApiResponse.ok(
-                "Agar bu username/email tizimda ro'yxatga olingan bo'lsa, tiklash havolasi yuboriladi"));
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        String token = body.getOrDefault("token", "");
-        String newPassword = body.getOrDefault("newPassword", "");
-        if (newPassword.length() < 6) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        String username   = body.getOrDefault("username",    "").trim();
+        String newPassword = body.getOrDefault("newPassword", "").trim();
+        if (username.isBlank())
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(400, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"));
-        }
-        authService.resetPassword(token, newPassword);
+                    .body(ApiResponse.error(400, "Username kiritilishi shart"));
+        if (newPassword.length() < 4)
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "Parol kamida 4 ta belgidan iborat bo'lishi kerak"));
+        authService.resetByUsername(username, newPassword);
         return ResponseEntity.ok(ApiResponse.ok("Parol muvaffaqiyatli yangilandi"));
     }
 

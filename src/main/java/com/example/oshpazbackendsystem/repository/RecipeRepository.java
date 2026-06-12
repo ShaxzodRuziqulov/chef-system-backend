@@ -97,6 +97,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findTop5ByVisibleTrueAndDeletedFalseOrderByViewCountDesc();
 
+    // Export uchun — sahifalashsiz versiyalar
+    List<Recipe> findAllByAuthorIdAndDeletedFalse(UUID authorId);
+    List<Recipe> findAllByDeletedFalseOrderByCreatedAtAsc();
+
     // Sevimlilar: foydalanuvchi saqlagan retseptlar (sahifalangan)
     @Query("""
             SELECT r FROM Recipe r

@@ -26,6 +26,8 @@ public class RecipeDto {
     // Kategoriya
     private Long categoryId;
     private String categoryNameUz;
+    private String categoryNameRu;
+    private String categoryNameEng;
 
     // Vaqt va porsiya
     private Integer prepTimeMinutes;
