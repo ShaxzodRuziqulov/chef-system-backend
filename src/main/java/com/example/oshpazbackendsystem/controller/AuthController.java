@@ -93,6 +93,20 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("Parol muvaffaqiyatli yangilandi"));
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String token       = body.getOrDefault("token",       "").trim();
+        String newPassword = body.getOrDefault("newPassword", "").trim();
+        if (token.isBlank())
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "Token kiritilishi shart"));
+        if (newPassword.length() < 4)
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "Parol kamida 4 ta belgidan iborat bo'lishi kerak"));
+        authService.resetByToken(token, newPassword);
+        return ResponseEntity.ok(ApiResponse.ok("Parol muvaffaqiyatli yangilandi"));
+    }
+
     @PostMapping("/logout")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> logout(

@@ -136,6 +136,25 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    /**
+     * Token orqali parol tiklash — ResetPasswordPage dan chaqiriladi.
+     * Token DB da saqlangan va muddati tekshiriladi.
+     */
+    public void resetByToken(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElseThrow(() -> new BadRequestException("INVALID_TOKEN", "Token noto'g'ri yoki muddati o'tgan"));
+
+        if (user.getResetTokenExpiry() == null
+                || user.getResetTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+            throw new BadRequestException("TOKEN_EXPIRED", "Token muddati o'tgan. Iltimos, qaytadan so'rang.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        userRepository.save(user);
+    }
+
     public AuthUserResponse toAuthUserResponse(User user) {
         AuthUserResponse response = new AuthUserResponse();
         response.setId(user.getId());
