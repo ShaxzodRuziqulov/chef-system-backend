@@ -87,12 +87,16 @@ public class ShoppingListService {
         shoppingList.getItems().clear();   // orphanRemoval=true → eski itemlar o'chadi
 
         for (IngredientAccumulator acc : accumulatorMap.values()) {
+            String section = acc.ingredient.getCategory() != null
+                    ? acc.ingredient.getCategory().name()
+                    : "OTHER";
             items.add(ShoppingListItem.builder()
                     .shoppingList(shoppingList)
                     .ingredient(acc.ingredient)
                     .amount(acc.totalAmount)
                     .unit(acc.unit)
                     .status(ShoppingItemStatus.PENDING)
+                    .grocerySection(section)
                     .build());
         }
         shoppingList.getItems().addAll(items);

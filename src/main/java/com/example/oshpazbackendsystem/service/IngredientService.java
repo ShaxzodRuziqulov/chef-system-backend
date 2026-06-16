@@ -57,6 +57,7 @@ public class IngredientService {
                             .description(request.getDescription())
                             .imageUrl(request.getImageUrl())
                             .defaultUnit(request.getDefaultUnit())
+                            .category(request.getCategory())
                             .caloriesPer100g(request.getCaloriesPer100g())
                             .allergen(request.isAllergen())
                             .build();
@@ -72,6 +73,7 @@ public class IngredientService {
         ingredient.setDescription(request.getDescription());
         ingredient.setImageUrl(request.getImageUrl());
         ingredient.setDefaultUnit(request.getDefaultUnit());
+        ingredient.setCategory(request.getCategory());
         ingredient.setCaloriesPer100g(request.getCaloriesPer100g());
         ingredient.setAllergen(request.isAllergen());
         return mapper.toDto(repository.save(ingredient));

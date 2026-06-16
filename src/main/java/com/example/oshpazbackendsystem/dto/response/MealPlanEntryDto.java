@@ -20,6 +20,7 @@ public class MealPlanEntryDto {
     private Long recipeId;
     private String recipeTitleUz;
     private String recipeTitleRu;
+    private String recipeTitleEng;
     private String recipeImageUrl;
 
     // Reja

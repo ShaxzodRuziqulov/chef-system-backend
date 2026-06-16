@@ -21,8 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,12 +52,11 @@ public class MealPlanService {
         checkOwnership(plan);
         return toResponse(plan);
     }
-
     public MealPlanResponse create(MealPlanCreateRequest request) {
         User user = currentUserService.getCurrentUser();
 
-        // Hafta boshlanish sana bo'yicha tekshiruv
-        LocalDate startDate = request.getWeekStartDate();
+        LocalDate startDate = request.getWeekStartDate()
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endDate = startDate.plusDays(6);
 
         MealPlan plan = MealPlan.builder()
@@ -76,6 +77,10 @@ public class MealPlanService {
 
         Recipe recipe = recipeRepository.findById(request.getRecipeId())
                 .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + request.getRecipeId()));
+
+        plan.getEntries().removeIf(e ->
+                e.getDayOfWeek() == request.getDayOfWeek() &&
+                        e.getMealType() == request.getMealType());
 
         MealPlanEntry entry = MealPlanEntry.builder()
                 .mealPlan(plan)
@@ -143,6 +148,7 @@ public class MealPlanService {
                         .recipeId(e.getRecipe().getId())
                         .recipeTitleUz(e.getRecipe().getTitleUz())
                         .recipeTitleRu(e.getRecipe().getTitleRu())
+                        .recipeTitleEng(e.getRecipe().getTitleEng())
                         .recipeImageUrl(e.getRecipe().getImageUrl())
                         .dayOfWeek(e.getDayOfWeek())
                         .mealType(e.getMealType())

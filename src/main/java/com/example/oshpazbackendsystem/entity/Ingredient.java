@@ -1,6 +1,7 @@
 package com.example.oshpazbackendsystem.entity;
 
 import com.example.oshpazbackendsystem.entity.base.BaseEntity;
+import com.example.oshpazbackendsystem.entity.enums.IngredientCategory;
 import com.example.oshpazbackendsystem.entity.enums.MeasurementUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -47,6 +48,10 @@ public class Ingredient extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private MeasurementUnit defaultUnit;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private IngredientCategory category;
 
     private Double caloriesPer100g;
 

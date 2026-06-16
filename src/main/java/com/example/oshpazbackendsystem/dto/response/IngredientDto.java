@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.dto.response;
 
+import com.example.oshpazbackendsystem.entity.enums.IngredientCategory;
 import com.example.oshpazbackendsystem.entity.enums.MeasurementUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class IngredientDto {
     private String description;
     private String imageUrl;
     private MeasurementUnit defaultUnit;
+    private IngredientCategory category;
     private Double caloriesPer100g;
     private boolean allergen;
 }

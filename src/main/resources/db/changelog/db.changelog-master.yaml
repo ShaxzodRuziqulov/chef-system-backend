@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/changes/014-cascade-delete-shopping.yaml
   - include:
       file: db/changelog/changes/015-deduplicate-recipes.yaml
+  - include:
+      file: db/changelog/changes/016-add-ingredient-category.yaml

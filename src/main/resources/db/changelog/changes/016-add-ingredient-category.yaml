@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016-add-ingredient-category
+      author: shaxzod
+      changes:
+        - addColumn:
+            tableName: ingredients
+            columns:
+              - column:
+                  name: category
+                  type: varchar(20)
+                  constraints:
+                    nullable: true

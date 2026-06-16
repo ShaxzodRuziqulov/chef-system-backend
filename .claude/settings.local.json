@@ -88,7 +88,14 @@
       "Bash(xargs grep -l \"route\\\\|guard\\\\|navigation\")",
       "Bash(Get-ChildItem -Path \"D:\\\\12\\\\chef-frontend-system\\\\src\" -Recurse -Filter \"*.vue\")",
       "Bash(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\" -Recurse -Directory)",
-      "PowerShell(python --version 2>&1)"
+      "PowerShell(python --version 2>&1)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\12\\\\oshpaz-backend-system\" -Recurse -Directory | Select-Object -First 20 | ForEach-Object { $_.FullName })",
+      "Read(//c/Users/janob/Downloads/**)",
+      "Bash(python -c ' *)",
+      "Bash(mvnw.cmd compile *)",
+      "Bash(del \"D:\\\\12\\\\oshpaz-backend-system\\\\src\\\\main\\\\java\\\\com\\\\example\\\\oshpazbackendsystem\\\\controller\\\\UserImportController.java\")",
+      "Bash(.\\\\mvnw.cmd compile *)",
+      "Bash(xargs grep -l \"page-content\\\\|main-content\\\\|layout\\\\|router-view\")"
     ]
   }
 }

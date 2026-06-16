@@ -1,5 +1,6 @@
 package com.example.oshpazbackendsystem.dto;
 
+import com.example.oshpazbackendsystem.entity.enums.IngredientCategory;
 import com.example.oshpazbackendsystem.entity.enums.MeasurementUnit;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,8 @@ public class IngredientRequest {
     private String imageUrl;
 
     private MeasurementUnit defaultUnit;
+
+    private IngredientCategory category;
 
     private Double caloriesPer100g;
 
