@@ -7,6 +7,7 @@ import com.example.oshpazbackendsystem.dto.response.PageResponse;
 import com.example.oshpazbackendsystem.dto.response.RecipeDto;
 import com.example.oshpazbackendsystem.entity.enums.DifficultyLevel;
 import com.example.oshpazbackendsystem.exception.ApiResponse;
+import java.util.List;
 import com.example.oshpazbackendsystem.service.RecipeService;
 import com.example.oshpazbackendsystem.service.UserRecipeImportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -100,6 +101,14 @@ public class RecipeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/similar")
+    @Operation(summary = "O'xshash retseptlar (bir xil kategoriya, reyting bo'yicha)")
+    public ResponseEntity<ApiResponse<List<RecipeDto>>> findSimilar(
+            @PathVariable Long id,
+            @RequestParam(value = "limit", defaultValue = "6") int limit) {
+        return ResponseEntity.ok(ApiResponse.ok(service.findSimilar(id, Math.min(limit, 12))));
     }
 
     @PostMapping("/{id}/view")

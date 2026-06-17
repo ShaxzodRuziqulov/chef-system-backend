@@ -111,4 +111,19 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             ORDER BY r.createdAt DESC
             """)
     Page<Recipe> findFavoritesByUserId(@Param("userId") UUID userId, Pageable pageable);
+
+    // O'xshash retseptlar: bir xil kategoriya, hozirgi retseptni chiqarib tashlash
+    @Query("""
+            SELECT r FROM Recipe r
+            WHERE r.deleted = false
+              AND r.category.id = :categoryId
+              AND r.id <> :excludeId
+              AND (r.visible = true OR r.author.id = :viewerId)
+            ORDER BY r.averageRating DESC, r.viewCount DESC
+            """)
+    Page<Recipe> findSimilar(
+            @Param("categoryId") Long categoryId,
+            @Param("excludeId") Long excludeId,
+            @Param("viewerId") UUID viewerId,
+            Pageable pageable);
 }

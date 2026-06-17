@@ -79,6 +79,20 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
+    public List<RecipeDto> findSimilar(Long recipeId, int limit) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new NotFoundException("RECIPE_NOT_FOUND", "Retsept topilmadi: " + recipeId));
+        if (recipe.getCategory() == null) return List.of();
+        return recipeRepository.findSimilar(
+                recipe.getCategory().getId(),
+                recipeId,
+                currentUserService.getCurrentUserIdOrNull(),
+                org.springframework.data.domain.PageRequest.of(0, limit))
+                .map(this::toDto)
+                .getContent();
+    }
+
+    @Transactional(readOnly = true)
     public Page<RecipeDto> findByDifficulty(DifficultyLevel level, Pageable pageable) {
         return recipeRepository.findByDifficultyVisibleOrOwned(
                 level, currentUserService.getCurrentUserIdOrNull(), pageable)
