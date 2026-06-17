@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018-update-ingredient-categories
+      author: shaxzod
+      comment: "002-seed-recipes da category ustuni bo'lmagan — mavjud ingredientlarga to'g'ri kategoriya qo'yiladi. name_eng orqali moslashtirish (apostrofsiz)."
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: |
+              UPDATE ingredients SET category = 'MEAT'      WHERE name_eng IN ('Beef', 'Lamb', 'Chicken') AND category IS NULL;
+              UPDATE ingredients SET category = 'VEGETABLE' WHERE name_eng IN ('Carrot', 'Onion', 'Potato', 'Tomato', 'Cucumber') AND category IS NULL;
+              UPDATE ingredients SET category = 'GRAIN'     WHERE name_eng IN ('Rice', 'Flour', 'Chickpea', 'Mung bean') AND category IS NULL;
+              UPDATE ingredients SET category = 'DAIRY'     WHERE name_eng IN ('Egg', 'Milk', 'Butter', 'Yogurt') AND category IS NULL;
+              UPDATE ingredients SET category = 'OIL'       WHERE name_eng IN ('Vegetable oil') AND category IS NULL;
+              UPDATE ingredients SET category = 'SPICE'     WHERE name_eng IN ('Cumin', 'Salt') AND category IS NULL;
+              UPDATE ingredients SET category = 'SWEETENER' WHERE name_eng IN ('Sugar') AND category IS NULL;
