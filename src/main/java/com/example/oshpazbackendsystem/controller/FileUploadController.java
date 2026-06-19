@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +25,17 @@ public class FileUploadController {
 
     private final GcsStorageService storageService;
 
-    private static final long        MAX_IMG_SIZE   = 5   * 1024 * 1024L;
-    private static final long        MAX_VIDEO_SIZE = 200 * 1024 * 1024L;
-    private static final Set<String> ALLOWED_IMG    = Set.of(
-            "image/jpeg", "image/png", "image/webp", "image/gif"
-    );
-    private static final Set<String> ALLOWED_VIDEO  = Set.of(
-            "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"
-    );
+    @Value("${app.upload.max-img-size}")
+    private long maxImgSize;
+
+    @Value("#{'${app.upload.allowed-img-types}'.split(',')}")
+    private Set<String> allowedImg;
+
+    @Value("${app.upload.max-video-size}")
+    private long maxVideoSize;
+
+    @Value("#{'${app.upload.allowed-video-types}'.split(',')}")
+    private Set<String> allowedVideo;
 
     @PostMapping("/image")
     @PreAuthorize("isAuthenticated()")
@@ -41,9 +45,9 @@ public class FileUploadController {
 
         if (file.isEmpty())
             throw new IllegalArgumentException("Fayl bo'sh");
-        if (file.getSize() > MAX_IMG_SIZE)
+        if (file.getSize() > maxImgSize)
             throw new IllegalArgumentException("Rasm hajmi 5 MB dan oshmasligi kerak");
-        if (!ALLOWED_IMG.contains(file.getContentType()))
+        if (!allowedImg.contains(file.getContentType()))
             throw new IllegalArgumentException("Faqat JPEG, PNG, WEBP, GIF formatlari qabul qilinadi");
 
         String url = storageService.upload(file);
@@ -58,9 +62,9 @@ public class FileUploadController {
 
         if (file.isEmpty())
             throw new IllegalArgumentException("Fayl bo'sh");
-        if (file.getSize() > MAX_VIDEO_SIZE)
+        if (file.getSize() > maxVideoSize)
             throw new IllegalArgumentException("Video hajmi 200 MB dan oshmasligi kerak");
-        if (!ALLOWED_VIDEO.contains(file.getContentType()))
+        if (!allowedVideo.contains(file.getContentType()))
             throw new IllegalArgumentException("Faqat MP4, WebM, MOV, AVI formatlari qabul qilinadi");
 
         String url = storageService.uploadVideo(file);

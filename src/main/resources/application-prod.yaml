@@ -4,6 +4,10 @@ server:
 app:
   upload:
     dir: uploads/images
+    max-img-size: 5242880
+    allowed-img-types: image/jpeg,image/png,image/webp,image/gif
+    max-video-size: 209715200
+    allowed-video-types: video/mp4,video/webm,video/quicktime,video/x-msvideo
   gcs:
     enabled: true
     bucket-name: oshpaz-uploads
